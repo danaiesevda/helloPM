@@ -44,7 +44,7 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
         >
           <div className="flex items-center gap-2 min-w-0">
             <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-sidebar-primary text-xs font-bold text-sidebar-primary-foreground">
-              T
+              S
             </div>
             <span className="truncate">Test</span>
           </div>
