@@ -17,9 +17,24 @@ import {
   Calendar,
   Map,
   Settings,
+  Plus,
+  Download,
+  LogOut,
+  ChevronRight,
 } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+} from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { mockTeams } from "@/lib/mock-data"
 
@@ -38,18 +53,68 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
     <aside className="flex h-screen w-60 flex-col border-r border-border bg-sidebar">
       {/* Workspace Switcher */}
       <div className="flex items-center gap-2 border-b border-sidebar-border px-3 py-3">
-        <Button
-          variant="ghost"
-          className="h-8 flex-1 min-w-0 justify-between px-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent"
-        >
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-sidebar-primary text-xs font-bold text-sidebar-primary-foreground">
-              S
-            </div>
-            <span className="truncate">Test</span>
-          </div>
-          <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="h-8 flex-1 justify-between px-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent"
+            >
+              <div className="flex items-center gap-2">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-yellow-500 text-xs font-bold text-black">
+                  P
+                </div>
+                <span>PineApple</span>
+              </div>
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            <DropdownMenuItem asChild>
+              <Link href="/settings" className="flex items-center w-full">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+                <DropdownMenuShortcut>G S</DropdownMenuShortcut>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/settings/members" className="flex items-center w-full">
+                <UserPlus className="mr-2 h-4 w-4" />
+                <span>Invite and manage members</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/download" className="flex items-center w-full">
+                <Download className="mr-2 h-4 w-4" />
+                <span>Download desktop app</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <span>Switch workspace</span>
+                <DropdownMenuShortcut>O W</DropdownMenuShortcut>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem>
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-5 w-5 items-center justify-center rounded bg-yellow-500 text-xs font-bold text-black">
+                      P
+                    </div>
+                    <span>PineApple</span>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/logout" className="flex items-center w-full">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+                <DropdownMenuShortcut>Q</DropdownMenuShortcut>
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button
           variant="ghost"
           size="icon"
@@ -58,13 +123,31 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
         >
           <Search className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
-        >
-          <PenSquare className="h-4 w-4" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
+            >
+              <PenSquare className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem asChild>
+              <Link href="/issues/new" className="flex items-center w-full">
+                <Plus className="mr-2 h-4 w-4" />
+                <span>Create new issue</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/projects/new" className="flex items-center w-full">
+                <Plus className="mr-2 h-4 w-4" />
+                <span>Create new project</span>
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Navigation */}

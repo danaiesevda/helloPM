@@ -1,18 +1,30 @@
 "use client"
 
-import { useState } from "react"
+import { use, useState } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
-import { mockProjects, mockIssues } from "@/lib/mock-data"
+import { mockTeams, mockProjects, mockIssues } from "@/lib/mock-data"
 import { Filter, Plus, Settings, LayoutGrid, List, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
 
-export default function ProjectsPage() {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+export default function TeamProjectsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = use(params)
   const [isCommandOpen, setIsCommandOpen] = useState(false)
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const team = mockTeams.find((t) => t.id === id)
+
+  if (!team) {
+    return <div>Team not found</div>
+  }
+
+  const teamProjects = mockProjects.filter((p) => p.teamId === team.id)
 
   return (
     <div className="flex h-screen bg-background">
@@ -21,16 +33,14 @@ export default function ProjectsPage() {
       <main className="flex flex-1 flex-col overflow-hidden">
         <header className="flex items-center justify-between border-b border-border px-4 py-3 gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <h1 className="text-xl font-semibold shrink-0">Projects</h1>
-            <Button variant="ghost" size="sm" className="h-7 text-sm shrink-0 whitespace-nowrap">
-              Active
-            </Button>
-            <Button variant="ghost" size="sm" className="h-7 text-sm shrink-0 whitespace-nowrap">
-              Planned
-            </Button>
-            <Button variant="ghost" size="sm" className="h-7 text-sm shrink-0 whitespace-nowrap">
-              Completed
-            </Button>
+            <div className="flex items-center gap-2">
+              <span className="text-lg">{team.icon}</span>
+              <Link href={`/team/${team.id}`} className="text-sm text-muted-foreground hover:text-foreground">
+                {team.name}
+              </Link>
+            </div>
+            <span className="text-muted-foreground">/</span>
+            <h1 className="text-lg font-semibold">Projects</h1>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
@@ -72,7 +82,7 @@ export default function ProjectsPage() {
         <div className="flex-1 overflow-y-auto p-6">
           {viewMode === "grid" ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {mockProjects.map((project) => {
+              {teamProjects.map((project) => {
                 const projectIssues = mockIssues.filter((i) => i.projectId === project.id)
                 const completedIssues = projectIssues.filter((i) => i.status === "done").length
 
@@ -126,7 +136,7 @@ export default function ProjectsPage() {
             </div>
           ) : (
             <div className="space-y-2">
-              {mockProjects.map((project) => {
+              {teamProjects.map((project) => {
                 const projectIssues = mockIssues.filter((i) => i.projectId === project.id)
                 const completedIssues = projectIssues.filter((i) => i.status === "done").length
 
@@ -177,6 +187,15 @@ export default function ProjectsPage() {
               })}
             </div>
           )}
+
+          {teamProjects.length === 0 && (
+            <div className="flex h-full items-center justify-center">
+              <div className="text-center">
+                <p className="text-lg font-medium">No projects</p>
+                <p className="text-sm text-muted-foreground">This team doesn't have any projects yet</p>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
@@ -184,3 +203,6 @@ export default function ProjectsPage() {
     </div>
   )
 }
+
+
+

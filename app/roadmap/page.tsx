@@ -1,12 +1,15 @@
 "use client"
 
+import { useState } from "react"
 import { Sidebar } from "@/components/sidebar"
+import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
 import { mockProjects, mockIssues } from "@/lib/mock-data"
 import { Plus, Settings, ChevronDown, Calendar } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 
 export default function RoadmapPage() {
+  const [isCommandOpen, setIsCommandOpen] = useState(false)
   const quarters = [
     { id: "q1-2024", label: "Q1 2024", months: ["Jan", "Feb", "Mar"] },
     { id: "q2-2024", label: "Q2 2024", months: ["Apr", "May", "Jun"] },
@@ -16,7 +19,7 @@ export default function RoadmapPage() {
 
   return (
     <div className="flex h-screen bg-background">
-      <Sidebar />
+      <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
         <header className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -127,6 +130,8 @@ export default function RoadmapPage() {
           </div>
         </div>
       </main>
+
+      <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
     </div>
   )
 }

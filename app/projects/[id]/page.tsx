@@ -1,7 +1,8 @@
 "use client"
 
-import { use } from "react"
+import { use, useState } from "react"
 import { Sidebar } from "@/components/sidebar"
+import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
 import { mockProjects, mockIssues } from "@/lib/mock-data"
 import { ArrowLeft, Settings, MoreHorizontal, Plus } from "lucide-react"
@@ -16,6 +17,7 @@ export default function ProjectDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
+  const [isCommandOpen, setIsCommandOpen] = useState(false)
   const project = mockProjects.find((p) => p.id === id)
 
   if (!project) {
@@ -31,7 +33,7 @@ export default function ProjectDetailPage({
 
   return (
     <div className="flex h-screen bg-background">
-      <Sidebar />
+      <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
         <header className="border-b border-border px-4 py-3">
@@ -159,6 +161,8 @@ export default function ProjectDetailPage({
           </div>
         </Tabs>
       </main>
+
+      <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
     </div>
   )
 }

@@ -12,7 +12,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command"
 import { mockIssues, mockProjects, mockTeams, mockUsers } from "@/lib/mock-data"
-import { FileText, FolderKanban, Users, Plus, Settings, Inbox, ListTodo, Calendar } from "lucide-react"
+import { FileText, FolderKanban, Users, Settings, Inbox, ListTodo, Calendar } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 interface CommandPaletteProps {
@@ -33,7 +33,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     }
 
     document.addEventListener("keydown", down)
-    return () => document.removeEventent("keydown", down)
+    return () => document.removeEventListener("keydown", down)
   }, [open, onOpenChange])
 
   const handleSelect = useCallback(
@@ -63,21 +63,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         <CommandEmpty>No results found.</CommandEmpty>
 
         {search === "" && (
-          <>
-            <CommandGroup heading="Quick Actions">
-              <CommandItem onSelect={() => handleSelect(() => console.log("Create new issue"))}>
-                <Plus className="mr-2 h-4 w-4" />
-                <span>Create new issue</span>
-              </CommandItem>
-              <CommandItem onSelect={() => handleSelect(() => console.log("Create new project"))}>
-                <Plus className="mr-2 h-4 w-4" />
-                <span>Create new project</span>
-              </CommandItem>
-            </CommandGroup>
-
-            <CommandSeparator />
-
-            <CommandGroup heading="Navigation">
+          <CommandGroup heading="Navigation">
               <CommandItem onSelect={() => handleSelect(() => router.push("/inbox"))}>
                 <Inbox className="mr-2 h-4 w-4" />
                 <span>Inbox</span>
@@ -99,7 +85,6 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                 <span>Settings</span>
               </CommandItem>
             </CommandGroup>
-          </>
         )}
 
         {search !== "" && filteredIssues.length > 0 && (

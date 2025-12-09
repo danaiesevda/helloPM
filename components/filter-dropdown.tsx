@@ -47,11 +47,10 @@ export function FilterDropdown({ filters, onFiltersChange }: FilterDropdownProps
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-7 gap-1 text-sm">
-          <Filter className="h-3 w-3" />
-          <span>Filter</span>
+        <Button variant="ghost" size="icon" className="h-8 w-8 relative">
+          <Filter className="h-4 w-4" />
           {activeFilterCount > 0 && (
-            <span className="ml-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
               {activeFilterCount}
             </span>
           )}

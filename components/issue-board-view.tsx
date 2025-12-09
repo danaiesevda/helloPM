@@ -12,9 +12,10 @@ interface IssueBoardViewProps {
   issues: Issue[]
   onIssueClick?: (issue: Issue) => void
   onIssueStatusChange?: (issueId: string, newStatus: Issue["status"]) => void
+  onCreateIssue?: (status: Issue["status"]) => void
 }
 
-export function IssueBoardView({ issues, onIssueClick, onIssueStatusChange }: IssueBoardViewProps) {
+export function IssueBoardView({ issues, onIssueClick, onIssueStatusChange, onCreateIssue }: IssueBoardViewProps) {
   const [draggedIssue, setDraggedIssue] = useState<Issue | null>(null)
   const [draggedOverColumn, setDraggedOverColumn] = useState<Issue["status"] | null>(null)
 
@@ -118,7 +119,12 @@ export function IssueBoardView({ issues, onIssueClick, onIssueStatusChange }: Is
                 <span className="text-xs text-muted-foreground">{columnIssues.length}</span>
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-6 w-6">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6"
+                  onClick={() => onCreateIssue?.(column.status)}
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="icon" className="h-6 w-6">

@@ -1,7 +1,8 @@
 "use client"
 
-import { use } from "react"
+import { use, useState } from "react"
 import { Sidebar } from "@/components/sidebar"
+import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { mockTeams, mockUsers, mockIssues, mockProjects } from "@/lib/mock-data"
@@ -11,6 +12,7 @@ import { Progress } from "@/components/ui/progress"
 
 export default function TeamPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
+  const [isCommandOpen, setIsCommandOpen] = useState(false)
   const team = mockTeams.find((t) => t.id === id)
 
   if (!team) {
@@ -29,7 +31,7 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
 
   return (
     <div className="flex h-screen bg-background">
-      <Sidebar />
+      <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
         <header className="border-b border-border px-4 py-4">
@@ -207,6 +209,8 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
           </div>
         </Tabs>
       </main>
+
+      <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
     </div>
   )
 }

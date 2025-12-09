@@ -1,5 +1,9 @@
+"use client"
+
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 import { mockData } from "@/lib/mock-data"
-import { TrendingUp, Clock, Target, Users } from "lucide-react"
+import { TrendingUp, Clock, Target, Users, ArrowLeft } from "lucide-react"
 
 export default function InsightsPage() {
   const totalIssues = mockData.issues.length
@@ -10,9 +14,14 @@ export default function InsightsPage() {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="border-b border-border px-6 py-4">
+        <div className="border-b border-border px-6 py-4 flex items-start gap-4">
+          <Link href="/">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to app
+            </Button>
+          </Link>
           <h1 className="text-xl font-semibold text-foreground">Insights</h1>
-          <p className="text-sm text-muted-foreground mt-1">Track team performance and productivity metrics</p>
         </div>
 
         <div className="flex-1 overflow-auto p-6">

@@ -2,6 +2,7 @@
 
 import { use, useState } from "react"
 import { Sidebar } from "@/components/sidebar"
+import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
 import { mockTeams, mockIssues, type Issue } from "@/lib/mock-data"
 import { Filter, Plus, Settings } from "lucide-react"
@@ -22,6 +23,7 @@ export default function TeamIssuesPage({
   const [currentView, setCurrentView] = useState<ViewType>("list")
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isCommandOpen, setIsCommandOpen] = useState(false)
 
   if (!team) {
     return <div>Team not found</div>
@@ -36,7 +38,7 @@ export default function TeamIssuesPage({
 
   return (
     <div className="flex h-screen bg-background">
-      <Sidebar />
+      <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
         <header className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -74,6 +76,7 @@ export default function TeamIssuesPage({
       </main>
 
       <IssueDetailModal issue={selectedIssue} open={isModalOpen} onOpenChange={setIsModalOpen} />
+      <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
     </div>
   )
 }

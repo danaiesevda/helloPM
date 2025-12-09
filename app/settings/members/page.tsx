@@ -1,11 +1,80 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { mockData } from "@/lib/mock-data"
-import { User, Mail, MoreHorizontal } from "lucide-react"
+import { User, Mail, MoreHorizontal, ArrowLeft, Edit, Trash2, UserX } from "lucide-react"
 
 export default function MembersSettingsPage() {
+  const [members, setMembers] = useState(mockData.users)
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
+  const [inviteEmail, setInviteEmail] = useState("")
+  const [inviteRole, setInviteRole] = useState("Member")
+
+  const handleInviteMember = () => {
+    if (!inviteEmail.trim()) return
+
+    const newMember = {
+      id: String(members.length + 1),
+      name: inviteEmail.split("@")[0],
+      email: inviteEmail.trim(),
+      role: inviteRole.toLowerCase() as "admin" | "member" | "guest",
+      avatar: null,
+      teamIds: [],
+    }
+
+    setMembers([...members, newMember])
+    setInviteEmail("")
+    setInviteRole("Member")
+    setIsInviteDialogOpen(false)
+  }
+
+  const handleRemoveMember = (memberId: string) => {
+    setMembers(members.filter((member) => member.id !== memberId))
+  }
+
+  const handleChangeRole = (memberId: string, newRole: string) => {
+    setMembers(
+      members.map((member) =>
+        member.id === memberId ? { ...member, role: newRole.toLowerCase() as "admin" | "member" | "guest" } : member
+      )
+    )
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <div className="flex-1 flex flex-col">
-        <div className="border-b border-border px-6 py-4">
+        <div className="border-b border-border px-6 py-4 flex items-center gap-4">
+          <Link href="/">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to app
+            </Button>
+          </Link>
           <h1 className="text-xl font-semibold text-foreground">Settings</h1>
         </div>
         <div className="flex flex-1 overflow-hidden">
@@ -56,10 +125,57 @@ export default function MembersSettingsPage() {
                   <h2 className="text-base font-semibold text-foreground">Members</h2>
                   <p className="text-sm text-muted-foreground mt-1">Manage workspace members and their roles</p>
                 </div>
-                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90">
-                  <Mail className="w-4 h-4 inline mr-2" />
-                  Invite members
-                </button>
+                <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Mail className="w-4 h-4 mr-2" />
+                      Invite members
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Invite member</DialogTitle>
+                      <DialogDescription>Send an invitation to join your workspace</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium text-foreground mb-2 block">Email address</label>
+                        <Input
+                          type="email"
+                          placeholder="colleague@example.com"
+                          value={inviteEmail}
+                          onChange={(e) => setInviteEmail(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && inviteEmail.trim()) {
+                              handleInviteMember()
+                            }
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-foreground mb-2 block">Role</label>
+                        <Select value={inviteRole} onValueChange={setInviteRole}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Admin">Admin</SelectItem>
+                            <SelectItem value="Member">Member</SelectItem>
+                            <SelectItem value="Guest">Guest</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setIsInviteDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={handleInviteMember} disabled={!inviteEmail.trim()}>
+                        Send invitation
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
 
               <div className="border border-border rounded-lg overflow-hidden">
@@ -74,7 +190,7 @@ export default function MembersSettingsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockData.users.map((user) => (
+                    {members.map((user) => (
                       <tr key={user.id} className="border-b border-border last:border-0 hover:bg-muted/30">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
@@ -86,22 +202,51 @@ export default function MembersSettingsPage() {
                         </td>
                         <td className="px-4 py-3 text-sm text-muted-foreground">{user.email}</td>
                         <td className="px-4 py-3">
-                          <select className="px-2 py-1 bg-background border border-border rounded text-sm text-foreground">
-                            <option>Admin</option>
-                            <option>Member</option>
-                            <option>Guest</option>
-                          </select>
+                          <Select
+                            value={user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                            onValueChange={(value) => handleChangeRole(user.id, value)}
+                          >
+                            <SelectTrigger className="h-8 w-24">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Admin">Admin</SelectItem>
+                              <SelectItem value="Member">Member</SelectItem>
+                              <SelectItem value="Guest">Guest</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </td>
                         <td className="px-4 py-3 text-sm text-muted-foreground">
                           {mockData.teams
                             .filter((t) => user.teamIds.includes(t.id))
                             .map((t) => t.name)
-                            .join(", ")}
+                            .join(", ") || "—"}
                         </td>
                         <td className="px-4 py-3">
-                          <button className="p-1 hover:bg-muted rounded">
-                            <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
-                          </button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit member
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <UserX className="mr-2 h-4 w-4" />
+                                Remove from workspace
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => handleRemoveMember(user.id)}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete member
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </td>
                       </tr>
                     ))}

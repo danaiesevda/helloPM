@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Sidebar } from "@/components/sidebar"
+import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { mockUsers } from "@/lib/mock-data"
@@ -64,6 +65,7 @@ const mockNotifications: Notification[] = [
 
 export default function InboxPage() {
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications)
+  const [isCommandOpen, setIsCommandOpen] = useState(false)
 
   const unreadNotifications = notifications.filter((n) => !n.read)
   const readNotifications = notifications.filter((n) => n.read)
@@ -105,7 +107,7 @@ export default function InboxPage() {
 
   return (
     <div className="flex h-screen bg-background">
-      <Sidebar />
+      <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
         <header className="flex items-center justify-between border-b border-border px-4 py-3 gap-4">
@@ -272,6 +274,8 @@ export default function InboxPage() {
           </div>
         </Tabs>
       </main>
+
+      <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
     </div>
   )
 }

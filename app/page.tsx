@@ -64,6 +64,72 @@ export default function Home() {
     setIsModalOpen(true)
   }
 
+  const handleDeleteIssues = (issueIds: string[]) => {
+    setIssues((prevIssues) => prevIssues.filter((issue) => !issueIds.includes(issue.id)))
+  }
+
+  const handleMoveToProject = (issueIds: string[], projectId: string | null) => {
+    setIssues((prevIssues) =>
+      prevIssues.map((issue) =>
+        issueIds.includes(issue.id) ? { ...issue, projectId } : issue
+      )
+    )
+  }
+
+  const handleAddLabel = (issueIds: string[], labelId: string) => {
+    setIssues((prevIssues) =>
+      prevIssues.map((issue) =>
+        issueIds.includes(issue.id)
+          ? { ...issue, labels: issue.labels.includes(labelId) ? issue.labels : [...issue.labels, labelId] }
+          : issue
+      )
+    )
+  }
+
+  const handleIssueUpdate = (issueId: string, updates: Partial<Issue>) => {
+    setIssues((prevIssues) =>
+      prevIssues.map((issue) =>
+        issue.id === issueId ? { ...issue, ...updates, updatedAt: new Date().toISOString() } : issue
+      )
+    )
+    // Update selected issue if it's the one being changed
+    if (selectedIssue?.id === issueId) {
+      setSelectedIssue({ ...selectedIssue, ...updates })
+    }
+  }
+
+  const handleCreateIssue = (status: Issue["status"] = "todo") => {
+    const newId = (Math.max(...issues.map(i => parseInt(i.id)), 0) + 1).toString()
+    // Find the highest TES number from existing identifiers
+    const tesNumbers = issues
+      .map(i => {
+        const match = i.identifier.match(/TES-(\d+)/)
+        return match ? parseInt(match[1]) : 0
+      })
+    const nextTesNumber = Math.max(...tesNumbers, 0) + 1
+    const newIssue: Issue = {
+      id: newId,
+      identifier: `TES-${nextTesNumber}`,
+      title: "New issue",
+      description: "",
+      status,
+      priority: "none",
+      assigneeId: null,
+      projectId: null,
+      teamId: "1",
+      labels: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      dueDate: null,
+      estimate: null,
+      createdBy: "1",
+    }
+    setIssues((prevIssues) => [newIssue, ...prevIssues])
+    // Open the modal to edit the new issue
+    setSelectedIssue(newIssue)
+    setIsModalOpen(true)
+  }
+
   // Apply filters to issues
   const filteredIssues = issues.filter((issue) => {
     if (filters.status.length > 0 && !filters.status.includes(issue.status)) {
@@ -83,7 +149,7 @@ export default function Home() {
 
   return (
     <div className="flex h-screen bg-background">
-      <Sidebar />
+      <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
         <header className="flex items-center justify-between border-b border-border px-4 py-2 gap-4">
@@ -135,7 +201,7 @@ export default function Home() {
             </Button>
           </div>
 
-          <Button size="sm" className="h-7 gap-1 text-sm">
+          <Button size="sm" className="h-7 gap-1 text-sm" onClick={() => handleCreateIssue("todo")}>
             <Plus className="h-3 w-3" />
             <span>New issue</span>
           </Button>
@@ -148,6 +214,10 @@ export default function Home() {
               onDragStart={handleDragStart}
               onDrop={handleDrop}
               onIssueClick={handleIssueClick}
+              onDeleteIssues={handleDeleteIssues}
+              onMoveToProject={handleMoveToProject}
+              onAddLabel={handleAddLabel}
+              onCreateIssue={handleCreateIssue}
             />
           )}
           {currentView === "board" && (
@@ -155,13 +225,28 @@ export default function Home() {
               issues={filteredIssues}
               onIssueClick={handleIssueClick}
               onIssueStatusChange={handleIssueStatusChange}
+              onCreateIssue={handleCreateIssue}
             />
           )}
-          {currentView === "table" && <IssueTableView issues={filteredIssues} onIssueClick={handleIssueClick} />}
+          {currentView === "table" && (
+            <IssueTableView 
+              issues={filteredIssues} 
+              onIssueClick={handleIssueClick}
+              onDeleteIssues={handleDeleteIssues}
+              onMoveToProject={handleMoveToProject}
+              onAddLabel={handleAddLabel}
+              onCreateIssue={handleCreateIssue}
+            />
+          )}
         </div>
       </main>
 
-      <IssueDetailModal issue={selectedIssue} open={isModalOpen} onOpenChange={setIsModalOpen} />
+      <IssueDetailModal 
+        issue={selectedIssue} 
+        open={isModalOpen} 
+        onOpenChange={setIsModalOpen}
+        onIssueUpdate={handleIssueUpdate}
+      />
 
       <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
     </div>

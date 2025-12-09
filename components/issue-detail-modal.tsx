@@ -35,9 +35,10 @@ interface IssueDetailModalProps {
   issue: Issue | null
   open: boolean
   onOpenChange: (open: boolean) => void
+  onIssueUpdate?: (issueId: string, updates: Partial<Issue>) => void
 }
 
-export function IssueDetailModal({ issue, open, onOpenChange }: IssueDetailModalProps) {
+export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: IssueDetailModalProps) {
   const [title, setTitle] = useState(issue?.title || "")
   const [description, setDescription] = useState(issue?.description || "")
   const [status, setStatus] = useState(issue?.status || "todo")
@@ -94,7 +95,7 @@ export function IssueDetailModal({ issue, open, onOpenChange }: IssueDetailModal
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[95vw] sm:max-w-6xl max-w-[95vw] overflow-hidden p-0">
+      <DialogContent className="max-h-[90vh] w-[95vw] sm:max-w-6xl max-w-[95vw] overflow-hidden p-0" showCloseButton={false}>
         <DialogTitle className="sr-only">
           {issue.identifier} - {title}
         </DialogTitle>
@@ -198,7 +199,10 @@ export function IssueDetailModal({ issue, open, onOpenChange }: IssueDetailModal
                     <Circle className="h-3 w-3" />
                     Status
                   </label>
-                  <Select value={status} onValueChange={(value: any) => setStatus(value)}>
+                  <Select value={status} onValueChange={(value: Issue["status"]) => {
+                    setStatus(value)
+                    onIssueUpdate?.(issue.id, { status: value })
+                  }}>
                     <SelectTrigger 
                       className="h-auto min-h-8 w-full text-sm [&_[data-slot=select-value]]:[display:block] [&_[data-slot=select-value]]:[overflow:visible] [&_[data-slot=select-value]]:[-webkit-line-clamp:unset] [&_[data-slot=select-value]]:whitespace-normal"
                     >
@@ -226,7 +230,10 @@ export function IssueDetailModal({ issue, open, onOpenChange }: IssueDetailModal
                     <Target className="h-3 w-3" />
                     Priority
                   </label>
-                  <Select value={priority} onValueChange={(value: any) => setPriority(value)}>
+                  <Select value={priority} onValueChange={(value: Issue["priority"]) => {
+                    setPriority(value)
+                    onIssueUpdate?.(issue.id, { priority: value })
+                  }}>
                     <SelectTrigger 
                       className="h-auto min-h-8 w-full text-sm [&_[data-slot=select-value]]:[display:block] [&_[data-slot=select-value]]:[overflow:visible] [&_[data-slot=select-value]]:[-webkit-line-clamp:unset] [&_[data-slot=select-value]]:whitespace-normal"
                     >
@@ -251,7 +258,11 @@ export function IssueDetailModal({ issue, open, onOpenChange }: IssueDetailModal
                     <User className="h-3 w-3" />
                     Assignee
                   </label>
-                  <Select value={assigneeId || "unassigned"} onValueChange={setAssigneeId}>
+                  <Select value={assigneeId || "unassigned"} onValueChange={(value) => {
+                    const newAssigneeId = value === "unassigned" ? null : value
+                    setAssigneeId(newAssigneeId || "")
+                    onIssueUpdate?.(issue.id, { assigneeId: newAssigneeId })
+                  }}>
                     <SelectTrigger 
                       className="h-auto min-h-8 w-full text-sm [&_[data-slot=select-value]]:[display:block] [&_[data-slot=select-value]]:[overflow:visible] [&_[data-slot=select-value]]:[-webkit-line-clamp:unset] [&_[data-slot=select-value]]:whitespace-normal"
                     >

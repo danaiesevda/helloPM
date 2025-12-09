@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Calendar, TrendingUp, Target, ChevronRight } from "lucide-react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Calendar, TrendingUp, Target, ChevronRight, ArrowLeft } from "lucide-react"
 
 export default function CyclesPage() {
   const [activeTab, setActiveTab] = useState<"active" | "upcoming" | "past">("active")
@@ -44,9 +46,14 @@ export default function CyclesPage() {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="border-b border-border px-6 py-4">
+        <div className="border-b border-border px-6 py-4 flex items-start gap-4">
+          <Link href="/">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to app
+            </Button>
+          </Link>
           <h1 className="text-xl font-semibold text-foreground">Cycles</h1>
-          <p className="text-sm text-muted-foreground mt-1">Plan and track work in time-boxed cycles</p>
         </div>
 
         <div className="border-b border-border px-6">

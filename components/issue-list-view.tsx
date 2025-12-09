@@ -1,18 +1,54 @@
 "use client"
 
-import type { Issue } from "@/lib/mock-data"
+import { useState } from "react"
+import { type Issue, mockProjects, mockLabels } from "@/lib/mock-data"
 import { IssueCard } from "@/components/issue-card"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Plus } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
+import { MoreHorizontal, Plus, X, Trash2, FolderInput, Tag, CheckCircle2, Archive, EyeOff } from "lucide-react"
 
 interface IssueListViewProps {
   issues: Issue[]
   onDragStart?: (issue: Issue) => void
   onDrop?: (status: Issue["status"]) => void
   onIssueClick?: (issue: Issue) => void
+  onDeleteIssues?: (issueIds: string[]) => void
+  onMoveToProject?: (issueIds: string[], projectId: string | null) => void
+  onAddLabel?: (issueIds: string[], labelId: string) => void
+  onCreateIssue?: (status: Issue["status"]) => void
 }
 
-export function IssueListView({ issues, onDragStart, onDrop, onIssueClick }: IssueListViewProps) {
+export function IssueListView({ 
+  issues, 
+  onDragStart, 
+  onDrop, 
+  onIssueClick,
+  onDeleteIssues,
+  onMoveToProject,
+  onAddLabel,
+  onCreateIssue,
+}: IssueListViewProps) {
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+  const toggleSelect = (issueId: string) => {
+    const newSelected = new Set(selectedIds)
+    if (newSelected.has(issueId)) {
+      newSelected.delete(issueId)
+    } else {
+      newSelected.add(issueId)
+    }
+    setSelectedIds(newSelected)
+  }
+
+  const clearSelection = () => {
+    setSelectedIds(new Set())
+  }
   const groupedIssues = {
     backlog: issues.filter((i) => i.status === "backlog"),
     todo: issues.filter((i) => i.status === "todo"),
@@ -31,8 +67,99 @@ export function IssueListView({ issues, onDragStart, onDrop, onIssueClick }: Iss
 
   return (
     <div className="space-y-6">
+      {/* Selection Action Bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-accent/50 px-4 py-2">
+          <span className="text-sm font-medium">
+            {selectedIds.size} selected
+          </span>
+          <div className="flex items-center gap-1">
+            {/* Move to Project Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs">
+                  <FolderInput className="h-3.5 w-3.5" />
+                  Move to project
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem
+                  onSelect={() => {
+                    onMoveToProject?.(Array.from(selectedIds), null)
+                    clearSelection()
+                  }}
+                >
+                  <span className="text-muted-foreground">No project</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {mockProjects.map((project) => (
+                  <DropdownMenuItem
+                    key={project.id}
+                    onSelect={() => {
+                      onMoveToProject?.(Array.from(selectedIds), project.id)
+                      clearSelection()
+                    }}
+                  >
+                    <span className="mr-2">{project.icon}</span>
+                    {project.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Add Label Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs">
+                  <Tag className="h-3.5 w-3.5" />
+                  Add label
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                {mockLabels.map((label) => (
+                  <DropdownMenuItem
+                    key={label.id}
+                    onSelect={() => {
+                      onAddLabel?.(Array.from(selectedIds), label.id)
+                      clearSelection()
+                    }}
+                  >
+                    <div
+                      className="mr-2 h-3 w-3 rounded-full"
+                      style={{ backgroundColor: label.color }}
+                    />
+                    {label.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Delete Button */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-7 gap-1.5 text-xs text-destructive hover:text-destructive"
+              onClick={() => {
+                onDeleteIssues?.(Array.from(selectedIds))
+                clearSelection()
+              }}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete
+            </Button>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="ml-auto h-6 w-6"
+            onClick={clearSelection}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
       {Object.entries(groupedIssues).map(([status, statusIssues]) => {
-        if (statusIssues.length === 0) return null
         const config = statusConfig[status as Issue["status"]]
 
         return (
@@ -40,25 +167,74 @@ export function IssueListView({ issues, onDragStart, onDrop, onIssueClick }: Iss
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <h2 className={`text-sm font-medium ${config.color}`}>{config.label}</h2>
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground">
-                  {statusIssues.length}
-                </span>
+                {statusIssues.length > 0 && (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground">
+                    {statusIssues.length}
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-6 w-6">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-6 w-6">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem
+                      onSelect={() => {
+                        const statusIssueIds = statusIssues.map(i => i.id)
+                        statusIssueIds.forEach(id => {
+                          if (!selectedIds.has(id)) {
+                            toggleSelect(id)
+                          }
+                        })
+                      }}
+                    >
+                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                      Select all
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Archive className="mr-2 h-4 w-4" />
+                      Archive all
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <EyeOff className="mr-2 h-4 w-4" />
+                      Hide section
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6"
+                  onClick={() => onCreateIssue?.(status as Issue["status"])}
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-            <div className="space-y-1">
-              {statusIssues.map((issue) => (
-                <div key={issue.id} draggable onDragStart={() => onDragStart?.(issue)} className="cursor-move">
-                  <IssueCard issue={issue} onClick={() => onIssueClick?.(issue)} />
+            <div className="space-y-1 min-h-[40px]">
+              {statusIssues.length === 0 ? (
+                <div 
+                  className="flex items-center justify-center h-10 rounded-md border border-dashed border-muted-foreground/30 text-xs text-muted-foreground cursor-pointer hover:border-muted-foreground/50 hover:bg-accent/30"
+                  onClick={() => onCreateIssue?.(status as Issue["status"])}
+                >
+                  No issues • Click to add
                 </div>
-              ))}
+              ) : (
+                statusIssues.map((issue) => (
+                  <div key={issue.id} draggable onDragStart={() => onDragStart?.(issue)} className="cursor-move">
+                    <IssueCard 
+                      issue={issue} 
+                      onClick={() => onIssueClick?.(issue)}
+                      isSelected={selectedIds.has(issue.id)}
+                      onToggleSelect={() => toggleSelect(issue.id)}
+                    />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )

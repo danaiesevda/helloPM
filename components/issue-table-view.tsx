@@ -1,18 +1,64 @@
 "use client"
 
-import { type Issue, mockUsers, mockProjects } from "@/lib/mock-data"
+import { useState } from "react"
+import { type Issue, mockUsers, mockProjects, mockLabels } from "@/lib/mock-data"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { MoreHorizontal } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
+import { MoreHorizontal, X, Trash2, FolderInput, Tag, Plus } from "lucide-react"
 
 interface IssueTableViewProps {
   issues: Issue[]
   onIssueClick?: (issue: Issue) => void
+  onDeleteIssues?: (issueIds: string[]) => void
+  onMoveToProject?: (issueIds: string[], projectId: string | null) => void
+  onAddLabel?: (issueIds: string[], labelId: string) => void
+  onCreateIssue?: (status: Issue["status"]) => void
 }
 
-export function IssueTableView({ issues, onIssueClick }: IssueTableViewProps) {
+export function IssueTableView({ 
+  issues, 
+  onIssueClick,
+  onDeleteIssues,
+  onMoveToProject,
+  onAddLabel,
+  onCreateIssue,
+}: IssueTableViewProps) {
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+  const allSelected = issues.length > 0 && selectedIds.size === issues.length
+  const someSelected = selectedIds.size > 0 && selectedIds.size < issues.length
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(issues.map((issue) => issue.id)))
+    }
+  }
+
+  const toggleSelect = (issueId: string) => {
+    const newSelected = new Set(selectedIds)
+    if (newSelected.has(issueId)) {
+      newSelected.delete(issueId)
+    } else {
+      newSelected.add(issueId)
+    }
+    setSelectedIds(newSelected)
+  }
+
+  const clearSelection = () => {
+    setSelectedIds(new Set())
+  }
+
   const getPriorityIcon = (priority: Issue["priority"]) => {
     const colors = {
       urgent: "bg-red-500",
@@ -42,13 +88,108 @@ export function IssueTableView({ issues, onIssueClick }: IssueTableViewProps) {
 
   return (
     <div className="overflow-x-auto">
+      {/* Selection Action Bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 border-b border-border bg-accent/50 px-4 py-2">
+          <span className="text-sm font-medium">
+            {selectedIds.size} selected
+          </span>
+          <div className="flex items-center gap-1">
+            {/* Move to Project Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs">
+                  <FolderInput className="h-3.5 w-3.5" />
+                  Move to project
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem
+                  onSelect={() => {
+                    onMoveToProject?.(Array.from(selectedIds), null)
+                    clearSelection()
+                  }}
+                >
+                  <span className="text-muted-foreground">No project</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {mockProjects.map((project) => (
+                  <DropdownMenuItem
+                    key={project.id}
+                    onSelect={() => {
+                      onMoveToProject?.(Array.from(selectedIds), project.id)
+                      clearSelection()
+                    }}
+                  >
+                    <span className="mr-2">{project.icon}</span>
+                    {project.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Add Label Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs">
+                  <Tag className="h-3.5 w-3.5" />
+                  Add label
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                {mockLabels.map((label) => (
+                  <DropdownMenuItem
+                    key={label.id}
+                    onSelect={() => {
+                      onAddLabel?.(Array.from(selectedIds), label.id)
+                      clearSelection()
+                    }}
+                  >
+                    <div
+                      className="mr-2 h-3 w-3 rounded-full"
+                      style={{ backgroundColor: label.color }}
+                    />
+                    {label.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Delete Button */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-7 gap-1.5 text-xs text-destructive hover:text-destructive"
+              onClick={() => {
+                onDeleteIssues?.(Array.from(selectedIds))
+                clearSelection()
+              }}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete
+            </Button>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="ml-auto h-6 w-6"
+            onClick={clearSelection}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
       <table className="w-full border-collapse">
         <thead>
           <tr className="border-b border-border text-left text-xs text-muted-foreground">
-            <th className="w-8 py-2 pl-4">
-              <Checkbox />
+            <th className="w-10 py-2 pl-4 pr-3">
+              <Checkbox
+                checked={someSelected ? "indeterminate" : allSelected}
+                onCheckedChange={toggleSelectAll}
+              />
             </th>
-            <th className="w-24 py-2">ID</th>
+            <th className="w-24 py-2 pl-2">ID</th>
             <th className="min-w-[300px] py-2">Title</th>
             <th className="w-32 py-2">Status</th>
             <th className="w-24 py-2">Priority</th>
@@ -62,17 +203,24 @@ export function IssueTableView({ issues, onIssueClick }: IssueTableViewProps) {
           {issues.map((issue) => {
             const assignee = mockUsers.find((u) => u.id === issue.assigneeId)
             const project = mockProjects.find((p) => p.id === issue.projectId)
+            const isSelected = selectedIds.has(issue.id)
 
             return (
               <tr
                 key={issue.id}
                 onClick={() => onIssueClick?.(issue)}
-                className="group cursor-pointer border-b border-border hover:bg-accent/50"
+                className={`group cursor-pointer border-b border-border hover:bg-accent/50 ${
+                  isSelected ? "bg-accent/30" : ""
+                }`}
               >
-                <td className="py-2 pl-4">
-                  <Checkbox onClick={(e) => e.stopPropagation()} />
+                <td className="py-2 pl-4 pr-3">
+                  <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={() => toggleSelect(issue.id)}
+                    onClick={(e) => e.stopPropagation()}
+                  />
                 </td>
-                <td className="py-2">
+                <td className="py-2 pl-2">
                   <span className="text-xs text-muted-foreground">{issue.identifier}</span>
                 </td>
                 <td className="py-2">
@@ -126,6 +274,15 @@ export function IssueTableView({ issues, onIssueClick }: IssueTableViewProps) {
           })}
         </tbody>
       </table>
+
+      {/* Add new issue row */}
+      <div 
+        className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:bg-accent/50 cursor-pointer border-b border-border"
+        onClick={() => onCreateIssue?.("todo")}
+      >
+        <Plus className="h-4 w-4" />
+        <span>Add issue</span>
+      </div>
     </div>
   )
 }

@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { MoreHorizontal, Circle, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { type Issue, mockUsers } from "@/lib/mock-data"
@@ -9,10 +8,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 interface IssueCardProps {
   issue: Issue
   onClick?: () => void
+  isSelected?: boolean
+  onToggleSelect?: () => void
 }
 
-export function IssueCard({ issue, onClick }: IssueCardProps) {
-  const [isChecked, setIsChecked] = useState(false)
+export function IssueCard({ issue, onClick, isSelected = false, onToggleSelect }: IssueCardProps) {
   const assignee = mockUsers.find((u) => u.id === issue.assigneeId)
 
   const getPriorityIcon = (priority: Issue["priority"]) => {
@@ -29,16 +29,18 @@ export function IssueCard({ issue, onClick }: IssueCardProps) {
   return (
     <div
       onClick={onClick}
-      className="group flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 hover:bg-accent/50 cursor-pointer"
+      className={`group flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 hover:bg-accent/50 cursor-pointer ${
+        isSelected ? "bg-accent/30 border-primary/50" : ""
+      }`}
     >
       <button
         onClick={(e) => {
           e.stopPropagation()
-          setIsChecked(!isChecked)
+          onToggleSelect?.()
         }}
         className="flex items-center justify-center"
       >
-        {isChecked ? (
+        {isSelected ? (
           <CheckCircle2 className="h-4 w-4 text-primary" />
         ) : (
           <Circle className="h-4 w-4 text-muted-foreground" />

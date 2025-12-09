@@ -1,18 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { use, useState } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
+import { mockTeams } from "@/lib/mock-data"
 import { Plus, Settings, MoreHorizontal, Star, LayoutGrid } from "lucide-react"
+import Link from "next/link"
 
 const mockViews = [
   {
     id: "1",
-    name: "My active issues",
-    description: "Issues assigned to me that are not done",
+    name: "Active issues",
+    description: "All active issues for this team",
     icon: "🎯",
-    filters: { status: ["todo", "in-progress"], assignee: ["me"] },
+    filters: { status: ["todo", "in-progress"] },
     favorite: true,
   },
   {
@@ -25,24 +27,34 @@ const mockViews = [
   },
   {
     id: "3",
-    name: "Overdue",
-    description: "Issues past their due date",
-    icon: "⏰",
-    filters: { overdue: true },
+    name: "Backlog",
+    description: "Issues in backlog",
+    icon: "📋",
+    filters: { status: ["backlog"] },
     favorite: false,
   },
   {
     id: "4",
-    name: "No assignee",
-    description: "Unassigned issues",
-    icon: "👤",
-    filters: { assignee: ["unassigned"] },
+    name: "Completed",
+    description: "Recently completed issues",
+    icon: "✅",
+    filters: { status: ["done"] },
     favorite: false,
   },
 ]
 
-export default function ViewsPage() {
+export default function TeamViewsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = use(params)
   const [isCommandOpen, setIsCommandOpen] = useState(false)
+  const team = mockTeams.find((t) => t.id === id)
+
+  if (!team) {
+    return <div>Team not found</div>
+  }
 
   return (
     <div className="flex h-screen bg-background">
@@ -51,8 +63,14 @@ export default function ViewsPage() {
       <main className="flex flex-1 flex-col overflow-hidden">
         <header className="flex items-center justify-between border-b border-border px-4 py-3">
           <div className="flex items-center gap-3">
-            <LayoutGrid className="h-5 w-5" />
-            <h1 className="text-xl font-semibold">Views</h1>
+            <div className="flex items-center gap-2">
+              <span className="text-lg">{team.icon}</span>
+              <Link href={`/team/${team.id}`} className="text-sm text-muted-foreground hover:text-foreground">
+                {team.name}
+              </Link>
+            </div>
+            <span className="text-muted-foreground">/</span>
+            <h1 className="text-lg font-semibold">Views</h1>
           </div>
 
           <div className="flex items-center gap-2">
@@ -61,7 +79,7 @@ export default function ViewsPage() {
             </Button>
             <Button size="sm" className="h-8 gap-1.5">
               <Plus className="h-4 w-4" />
-              <span>New view</span>
+              New view
             </Button>
           </div>
         </header>
@@ -142,6 +160,15 @@ export default function ViewsPage() {
                 ))}
             </div>
           </div>
+
+          {mockViews.length === 0 && (
+            <div className="flex h-full items-center justify-center">
+              <div className="text-center">
+                <p className="text-lg font-medium">No views</p>
+                <p className="text-sm text-muted-foreground">Create your first view to get started</p>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
@@ -149,3 +176,6 @@ export default function ViewsPage() {
     </div>
   )
 }
+
+
+
