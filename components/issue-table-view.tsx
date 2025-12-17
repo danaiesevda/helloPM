@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { type Issue, mockUsers, mockProjects, mockLabels } from "@/lib/mock-data"
+import { type Issue, mockUsers, mockProjects } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -13,7 +14,13 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, X, Trash2, FolderInput, Tag, Plus } from "lucide-react"
+import { MoreHorizontal, X, Trash2, FolderInput, Tag, Plus, Copy, Link2 } from "lucide-react"
+import {
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+} from "@/components/ui/dropdown-menu"
+import { getLabelIcon } from "@/lib/label-icons"
 
 interface IssueTableViewProps {
   issues: Issue[]
@@ -32,6 +39,9 @@ export function IssueTableView({
   onAddLabel,
   onCreateIssue,
 }: IssueTableViewProps) {
+  const { state } = useAppState()
+  const availableLabels = state.labels
+  
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   const allSelected = issues.length > 0 && selectedIds.size === issues.length
@@ -137,7 +147,7 @@ export function IssueTableView({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-48">
-                {mockLabels.map((label) => (
+                {availableLabels.map((label) => (
                   <DropdownMenuItem
                     key={label.id}
                     onSelect={() => {
@@ -145,10 +155,9 @@ export function IssueTableView({
                       clearSelection()
                     }}
                   >
-                    <div
-                      className="mr-2 h-3 w-3 rounded-full"
-                      style={{ backgroundColor: label.color }}
-                    />
+                    <span className="mr-2" style={{ color: label.color }}>
+                      {getLabelIcon(label.name)}
+                    </span>
                     {label.name}
                   </DropdownMenuItem>
                 ))}
@@ -260,14 +269,89 @@ export function IssueTableView({
                   {issue.estimate && <span className="text-xs text-muted-foreground">{issue.estimate}</span>}
                 </td>
                 <td className="py-2 pr-4">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 opacity-0 group-hover:opacity-100"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48" onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenuItem
+                        onSelect={() => {
+                          if (navigator?.clipboard) {
+                            navigator.clipboard.writeText(issue.identifier)
+                          }
+                        }}
+                      >
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copy ID
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onSelect={() => {
+                          if (typeof window !== 'undefined' && navigator?.clipboard) {
+                            navigator.clipboard.writeText(`${window.location.origin}/issue/${issue.id}`)
+                          }
+                        }}
+                      >
+                        <Link2 className="mr-2 h-4 w-4" />
+                        Copy link
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                          <FolderInput className="mr-2 h-4 w-4" />
+                          Move to project
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent className="w-48">
+                          <DropdownMenuItem onSelect={() => onMoveToProject?.([issue.id], null)}>
+                            <span className="text-muted-foreground">No project</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          {mockProjects.map((proj) => (
+                            <DropdownMenuItem 
+                              key={proj.id} 
+                              onSelect={() => onMoveToProject?.([issue.id], proj.id)}
+                            >
+                              <span className="mr-2">{proj.icon}</span>
+                              {proj.name}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                          <Tag className="mr-2 h-4 w-4" />
+                          Add label
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent className="w-48">
+                          {availableLabels.map((label) => (
+                            <DropdownMenuItem 
+                              key={label.id} 
+                              onSelect={() => onAddLabel?.([issue.id], label.id)}
+                            >
+                              <span className="mr-2" style={{ color: label.color }}>
+                                {getLabelIcon(label.name)}
+                              </span>
+                              {label.name}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onSelect={() => onDeleteIssues?.([issue.id])}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </td>
               </tr>
             )

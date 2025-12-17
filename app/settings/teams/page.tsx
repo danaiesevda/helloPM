@@ -14,7 +14,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { ArrowLeft, Plus, Users, MoreHorizontal, UserPlus, Settings as SettingsIcon } from "lucide-react"
-import { mockTeams, mockUsers } from "@/lib/mock-data"
+import { mockUsers } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +26,9 @@ import {
 const teamIcons = ["⚙️", "🎨", "💻", "📊", "🎯", "🚀", "🔧", "📱", "🌐", "🎭"]
 
 export default function TeamsSettingsPage() {
-  const [teams, setTeams] = useState(mockTeams)
+  const { state, addTeam, updateTeam, deleteTeam } = useAppState()
+  const teams = state.teams
+  
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isAddMembersDialogOpen, setIsAddMembersDialogOpen] = useState<string | null>(null)
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState<string | null>(null)
@@ -46,7 +49,7 @@ export default function TeamsSettingsPage() {
       memberCount: 0,
     }
 
-    setTeams([...teams, newTeam])
+    addTeam(newTeam)
     setNewTeamName("")
     setNewTeamKey("")
     setNewTeamIcon(teamIcons[0])
@@ -61,13 +64,10 @@ export default function TeamsSettingsPage() {
   const handleAddMembers = () => {
     if (!isAddMembersDialogOpen || selectedMembers.length === 0) return
 
-    setTeams(
-      teams.map((team) =>
-        team.id === isAddMembersDialogOpen
-          ? { ...team, memberCount: team.memberCount + selectedMembers.length }
-          : team
-      )
-    )
+    const team = teams.find((t) => t.id === isAddMembersDialogOpen)
+    if (team) {
+      updateTeam(isAddMembersDialogOpen, { memberCount: team.memberCount + selectedMembers.length })
+    }
     setIsAddMembersDialogOpen(null)
     setSelectedMembers([])
   }
@@ -80,19 +80,17 @@ export default function TeamsSettingsPage() {
   const handleSaveSettings = () => {
     if (!isSettingsDialogOpen || !teamSettings) return
 
-    setTeams(
-      teams.map((team) =>
-        team.id === isSettingsDialogOpen
-          ? { ...team, name: teamSettings.name, key: teamSettings.key, icon: teamSettings.icon }
-          : team
-      )
-    )
+    updateTeam(isSettingsDialogOpen, {
+      name: teamSettings.name,
+      key: teamSettings.key,
+      icon: teamSettings.icon,
+    })
     setIsSettingsDialogOpen(null)
     setTeamSettings(null)
   }
 
   const handleDeleteTeam = (teamId: string) => {
-    setTeams(teams.filter((team) => team.id !== teamId))
+    deleteTeam(teamId)
   }
 
   return (

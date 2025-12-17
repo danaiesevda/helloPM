@@ -6,7 +6,7 @@ import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { mockTeams, mockUsers, mockIssues, mockProjects } from "@/lib/mock-data"
-import { Settings, UserPlus, MoreHorizontal, TrendingUp } from "lucide-react"
+import { UserPlus, MoreHorizontal, TrendingUp } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 
@@ -50,9 +50,6 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
               <Button variant="outline" size="sm" className="h-8 gap-1.5 bg-transparent">
                 <UserPlus className="h-4 w-4" />
                 Invite
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Settings className="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8">
                 <MoreHorizontal className="h-4 w-4" />

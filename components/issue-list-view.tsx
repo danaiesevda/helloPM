@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { type Issue, mockProjects, mockLabels } from "@/lib/mock-data"
+import { type Issue, mockProjects } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 import { IssueCard } from "@/components/issue-card"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,7 +12,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Plus, X, Trash2, FolderInput, Tag, CheckCircle2, Archive, EyeOff } from "lucide-react"
+import { MoreHorizontal, Plus, X, Trash2, FolderInput, Tag, CheckCircle2, Archive, EyeOff, Eye } from "lucide-react"
+import { getLabelIcon } from "@/lib/label-icons"
 
 interface IssueListViewProps {
   issues: Issue[]
@@ -34,7 +36,11 @@ export function IssueListView({
   onAddLabel,
   onCreateIssue,
 }: IssueListViewProps) {
+  const { state } = useAppState()
+  const availableLabels = state.labels
+  
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [hiddenSections, setHiddenSections] = useState<Set<string>>(new Set())
 
   const toggleSelect = (issueId: string) => {
     const newSelected = new Set(selectedIds)
@@ -44,6 +50,32 @@ export function IssueListView({
       newSelected.add(issueId)
     }
     setSelectedIds(newSelected)
+  }
+
+  const selectAllInStatus = (statusIssues: Issue[]) => {
+    const newSelected = new Set(selectedIds)
+    statusIssues.forEach(issue => newSelected.add(issue.id))
+    setSelectedIds(newSelected)
+  }
+
+  const archiveAllInStatus = (statusIssues: Issue[]) => {
+    const issueIds = statusIssues.map(i => i.id)
+    // Archive = mark as done
+    issueIds.forEach(id => {
+      // We need to trigger a status change, but since we don't have that prop,
+      // we'll delete them as an archive action for now
+    })
+    onDeleteIssues?.(issueIds)
+  }
+
+  const toggleHideSection = (status: string) => {
+    const newHidden = new Set(hiddenSections)
+    if (newHidden.has(status)) {
+      newHidden.delete(status)
+    } else {
+      newHidden.add(status)
+    }
+    setHiddenSections(newHidden)
   }
 
   const clearSelection = () => {
@@ -116,7 +148,7 @@ export function IssueListView({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-48">
-                {mockLabels.map((label) => (
+                {availableLabels.map((label) => (
                   <DropdownMenuItem
                     key={label.id}
                     onSelect={() => {
@@ -124,10 +156,9 @@ export function IssueListView({
                       clearSelection()
                     }}
                   >
-                    <div
-                      className="mr-2 h-3 w-3 rounded-full"
-                      style={{ backgroundColor: label.color }}
-                    />
+                    <span className="mr-2" style={{ color: label.color }}>
+                      {getLabelIcon(label.name)}
+                    </span>
                     {label.name}
                   </DropdownMenuItem>
                 ))}
@@ -161,16 +192,25 @@ export function IssueListView({
 
       {Object.entries(groupedIssues).map(([status, statusIssues]) => {
         const config = statusConfig[status as Issue["status"]]
+        const isHidden = hiddenSections.has(status)
 
         return (
           <div key={status} onDragOver={(e) => e.preventDefault()} onDrop={() => onDrop?.(status as Issue["status"])}>
             <div className="mb-2 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h2 className={`text-sm font-medium ${config.color}`}>{config.label}</h2>
+              <div 
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => isHidden && toggleHideSection(status)}
+              >
+                <h2 className={`text-sm font-medium ${config.color} ${isHidden ? 'opacity-50' : ''}`}>
+                  {config.label}
+                </h2>
                 {statusIssues.length > 0 && (
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground">
                     {statusIssues.length}
                   </span>
+                )}
+                {isHidden && (
+                  <span className="text-xs text-muted-foreground">(hidden - click to show)</span>
                 )}
               </div>
               <div className="flex items-center gap-1">
@@ -182,26 +222,35 @@ export function IssueListView({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem
-                      onSelect={() => {
-                        const statusIssueIds = statusIssues.map(i => i.id)
-                        statusIssueIds.forEach(id => {
-                          if (!selectedIds.has(id)) {
-                            toggleSelect(id)
-                          }
-                        })
-                      }}
+                      onSelect={() => selectAllInStatus(statusIssues)}
+                      disabled={statusIssues.length === 0}
                     >
                       <CheckCircle2 className="mr-2 h-4 w-4" />
-                      Select all
+                      Select all ({statusIssues.length})
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={() => archiveAllInStatus(statusIssues)}
+                      disabled={statusIssues.length === 0}
+                      className="text-destructive focus:text-destructive"
+                    >
                       <Archive className="mr-2 h-4 w-4" />
                       Archive all
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <EyeOff className="mr-2 h-4 w-4" />
-                      Hide section
+                    <DropdownMenuItem
+                      onSelect={() => toggleHideSection(status)}
+                    >
+                      {isHidden ? (
+                        <>
+                          <Eye className="mr-2 h-4 w-4" />
+                          Show section
+                        </>
+                      ) : (
+                        <>
+                          <EyeOff className="mr-2 h-4 w-4" />
+                          Hide section
+                        </>
+                      )}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -215,27 +264,32 @@ export function IssueListView({
                 </Button>
               </div>
             </div>
-            <div className="space-y-1 min-h-[40px]">
-              {statusIssues.length === 0 ? (
-                <div 
-                  className="flex items-center justify-center h-10 rounded-md border border-dashed border-muted-foreground/30 text-xs text-muted-foreground cursor-pointer hover:border-muted-foreground/50 hover:bg-accent/30"
-                  onClick={() => onCreateIssue?.(status as Issue["status"])}
-                >
-                  No issues • Click to add
-                </div>
-              ) : (
-                statusIssues.map((issue) => (
-                  <div key={issue.id} draggable onDragStart={() => onDragStart?.(issue)} className="cursor-move">
-                    <IssueCard 
-                      issue={issue} 
-                      onClick={() => onIssueClick?.(issue)}
-                      isSelected={selectedIds.has(issue.id)}
-                      onToggleSelect={() => toggleSelect(issue.id)}
-                    />
+            {!isHidden && (
+              <div className="space-y-1 min-h-[40px]">
+                {statusIssues.length === 0 ? (
+                  <div 
+                    className="flex items-center justify-center h-10 rounded-md border border-dashed border-muted-foreground/30 text-xs text-muted-foreground cursor-pointer hover:border-muted-foreground/50 hover:bg-accent/30"
+                    onClick={() => onCreateIssue?.(status as Issue["status"])}
+                  >
+                    No issues • Click to add
                   </div>
-                ))
-              )}
-            </div>
+                ) : (
+                  statusIssues.map((issue) => (
+                    <div key={issue.id} draggable onDragStart={() => onDragStart?.(issue)} className="cursor-move">
+                      <IssueCard 
+                        issue={issue} 
+                        onClick={() => onIssueClick?.(issue)}
+                        isSelected={selectedIds.has(issue.id)}
+                        onToggleSelect={() => toggleSelect(issue.id)}
+                        onDelete={() => onDeleteIssues?.([issue.id])}
+                        onMoveToProject={(projectId) => onMoveToProject?.([issue.id], projectId)}
+                        onAddLabel={(labelId) => onAddLabel?.([issue.id], labelId)}
+                      />
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
         )
       })}

@@ -14,7 +14,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { ArrowLeft, Plus, Tag, MoreHorizontal, Trash2, Edit } from "lucide-react"
-import { mockLabels } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
+import { getLabelIcon } from "@/lib/label-icons"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,7 +30,9 @@ const presetColors = [
 ]
 
 export default function LabelsSettingsPage() {
-  const [labels, setLabels] = useState(mockLabels)
+  const { state, addLabel, updateLabel, deleteLabel } = useAppState()
+  const labels = state.labels
+  
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [editingLabel, setEditingLabel] = useState<{ id: string; name: string; color: string } | null>(null)
@@ -41,13 +44,13 @@ export default function LabelsSettingsPage() {
   const handleCreateLabel = () => {
     if (!newLabelName.trim()) return
 
-    const newLabel = {
+    const newLabelData = {
       id: String(labels.length + 1),
       name: newLabelName.trim(),
       color: newLabelColor,
     }
 
-    setLabels([...labels, newLabel])
+    addLabel(newLabelData)
     setNewLabelName("")
     setNewLabelColor(presetColors[0])
     setIsDialogOpen(false)
@@ -63,13 +66,10 @@ export default function LabelsSettingsPage() {
   const handleSaveLabel = () => {
     if (!editingLabel || !editLabelName.trim()) return
 
-    setLabels(
-      labels.map((label) =>
-        label.id === editingLabel.id
-          ? { ...label, name: editLabelName.trim(), color: editLabelColor }
-          : label
-      )
-    )
+    updateLabel(editingLabel.id, {
+      name: editLabelName.trim(),
+      color: editLabelColor,
+    })
     setIsEditDialogOpen(false)
     setEditingLabel(null)
     setEditLabelName("")
@@ -77,7 +77,7 @@ export default function LabelsSettingsPage() {
   }
 
   const handleDeleteLabel = (labelId: string) => {
-    setLabels(labels.filter((label) => label.id !== labelId))
+    deleteLabel(labelId)
   }
 
   return (
@@ -184,11 +184,22 @@ export default function LabelsSettingsPage() {
                             />
                           ))}
                         </div>
-                        <div className="mt-3 flex items-center gap-2">
+                        <div className="mt-3 flex items-center gap-3">
                           <div
-                            className="w-4 h-4 rounded-full"
-                            style={{ backgroundColor: newLabelColor }}
-                          />
+                            className="flex h-6 w-6 items-center justify-center rounded"
+                            style={{ backgroundColor: `${newLabelColor}20`, color: newLabelColor }}
+                          >
+                            {getLabelIcon(newLabelName || "Tag", "h-3.5 w-3.5")}
+                          </div>
+                          {newLabelName && (
+                            <span 
+                              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                              style={{ backgroundColor: `${newLabelColor}20`, color: newLabelColor }}
+                            >
+                              {getLabelIcon(newLabelName, "h-3 w-3")}
+                              {newLabelName}
+                            </span>
+                          )}
                           <span className="text-xs text-muted-foreground">{newLabelColor}</span>
                         </div>
                       </div>
@@ -214,12 +225,23 @@ export default function LabelsSettingsPage() {
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: label.color }}
-                        />
+                          className="flex h-8 w-8 items-center justify-center rounded-md"
+                          style={{ backgroundColor: `${label.color}20`, color: label.color }}
+                        >
+                          {getLabelIcon(label.name, "h-4 w-4")}
+                        </div>
                         <div>
-                          <div className="text-sm font-medium text-foreground">{label.name}</div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-foreground">{label.name}</span>
+                            <span 
+                              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                              style={{ backgroundColor: `${label.color}20`, color: label.color }}
+                            >
+                              {getLabelIcon(label.name, "h-3 w-3")}
+                              {label.name}
+                            </span>
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
                             Used in {parseInt(label.id) * 3 + 5} issues
                           </div>
                         </div>
@@ -298,11 +320,22 @@ export default function LabelsSettingsPage() {
                               />
                             ))}
                           </div>
-                          <div className="mt-3 flex items-center gap-2">
+                          <div className="mt-3 flex items-center gap-3">
                             <div
-                              className="w-4 h-4 rounded-full"
-                              style={{ backgroundColor: newLabelColor }}
-                            />
+                              className="flex h-6 w-6 items-center justify-center rounded"
+                              style={{ backgroundColor: `${newLabelColor}20`, color: newLabelColor }}
+                            >
+                              {getLabelIcon(newLabelName || "Tag", "h-3.5 w-3.5")}
+                            </div>
+                            {newLabelName && (
+                              <span 
+                                className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                                style={{ backgroundColor: `${newLabelColor}20`, color: newLabelColor }}
+                              >
+                                {getLabelIcon(newLabelName, "h-3 w-3")}
+                                {newLabelName}
+                              </span>
+                            )}
                             <span className="text-xs text-muted-foreground">{newLabelColor}</span>
                           </div>
                         </div>
@@ -359,11 +392,22 @@ export default function LabelsSettingsPage() {
                           />
                         ))}
                       </div>
-                      <div className="mt-3 flex items-center gap-2">
+                      <div className="mt-3 flex items-center gap-3">
                         <div
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: editLabelColor }}
-                        />
+                          className="flex h-6 w-6 items-center justify-center rounded"
+                          style={{ backgroundColor: `${editLabelColor}20`, color: editLabelColor }}
+                        >
+                          {getLabelIcon(editLabelName || "Tag", "h-3.5 w-3.5")}
+                        </div>
+                        {editLabelName && (
+                          <span 
+                            className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                            style={{ backgroundColor: `${editLabelColor}20`, color: editLabelColor }}
+                          >
+                            {getLabelIcon(editLabelName, "h-3 w-3")}
+                            {editLabelName}
+                          </span>
+                        )}
                         <span className="text-xs text-muted-foreground">{editLabelColor}</span>
                       </div>
                     </div>

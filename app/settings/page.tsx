@@ -6,15 +6,43 @@ import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Moon, Sun, Monitor } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useAppState } from "@/lib/store"
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
+  const { state, updateWorkspace } = useAppState()
   const [mounted, setMounted] = useState(false)
-  const [notifications, setNotifications] = useState(true)
+  
+  // Local state for form fields
+  const [workspaceName, setWorkspaceName] = useState(state.workspace.name)
+  const [workspaceUrl, setWorkspaceUrl] = useState(state.workspace.url)
+  const [notifications, setNotifications] = useState(state.workspace.notifications)
+  const [isSaved, setIsSaved] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Sync local state when global state changes (e.g., after hydration)
+  useEffect(() => {
+    setWorkspaceName(state.workspace.name)
+    setWorkspaceUrl(state.workspace.url)
+    setNotifications(state.workspace.notifications)
+  }, [state.workspace])
+
+  // Reset saved state when user makes changes
+  useEffect(() => {
+    setIsSaved(false)
+  }, [workspaceName, workspaceUrl, notifications])
+
+  const handleSaveChanges = () => {
+    updateWorkspace({
+      name: workspaceName,
+      url: workspaceUrl,
+      notifications: notifications,
+    })
+    setIsSaved(true)
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -78,7 +106,8 @@ export default function SettingsPage() {
                     <label className="text-sm font-medium text-foreground">Workspace name</label>
                     <input
                       type="text"
-                      defaultValue="Test"
+                      value={workspaceName}
+                      onChange={(e) => setWorkspaceName(e.target.value)}
                       className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-foreground"
                     />
                   </div>
@@ -86,7 +115,8 @@ export default function SettingsPage() {
                     <label className="text-sm font-medium text-foreground">Workspace URL</label>
                     <input
                       type="text"
-                      defaultValue="test.linear.app"
+                      value={workspaceUrl}
+                      onChange={(e) => setWorkspaceUrl(e.target.value)}
                       className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-foreground"
                     />
                   </div>
@@ -142,9 +172,9 @@ export default function SettingsPage() {
               </div>
 
               <div className="pt-4 border-t border-border">
-                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90">
-                  Save changes
-                </button>
+                <Button onClick={handleSaveChanges} variant={isSaved ? "outline" : "default"}>
+                  {isSaved ? "Changes saved" : "Save changes"}
+                </Button>
               </div>
             </div>
           </div>

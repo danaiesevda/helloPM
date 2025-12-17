@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   ChevronDown,
   Inbox,
@@ -21,6 +22,7 @@ import {
   Download,
   LogOut,
   ChevronRight,
+  Users,
 } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -35,19 +37,57 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
-import { mockTeams } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 
 interface SidebarProps {
   onSearchClick?: () => void
 }
 
 export function Sidebar({ onSearchClick }: SidebarProps) {
-  const [selectedTeam, setSelectedTeam] = useState(mockTeams[0].id)
+  const pathname = usePathname()
+  const { state, addUser } = useAppState()
+  const teams = state.teams
+  const [selectedTeam, setSelectedTeam] = useState(teams[0]?.id || "")
   const [workspaceOpen, setWorkspaceOpen] = useState(true)
   const [teamOpen, setTeamOpen] = useState(true)
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
+  const [inviteEmails, setInviteEmails] = useState("")
 
-  const currentTeam = mockTeams.find((t) => t.id === selectedTeam)
+  const handleSendInvites = () => {
+    if (!inviteEmails.trim()) return
+    
+    // Parse emails (comma or newline separated)
+    const emails = inviteEmails
+      .split(/[,\n]/)
+      .map(email => email.trim())
+      .filter(email => email.length > 0 && email.includes("@"))
+    
+    // Add each email as a new user
+    emails.forEach((email, index) => {
+      const newUser = {
+        id: `invited-${Date.now()}-${index}`,
+        name: email.split("@")[0],
+        email: email,
+        role: "member" as const,
+        avatar: null,
+        teamIds: [],
+      }
+      addUser(newUser)
+    })
+    
+    setInviteEmails("")
+    setIsInviteDialogOpen(false)
+  }
+
+  const currentTeam = teams.find((t) => t.id === selectedTeam)
 
   return (
     <aside className="flex h-screen w-60 flex-col border-r border-border bg-sidebar">
@@ -61,9 +101,9 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
             >
               <div className="flex items-center gap-2">
                 <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-yellow-500 text-xs font-bold text-black">
-                  P
+                  {state.workspace.name.charAt(0).toUpperCase()}
                 </div>
-                <span>PineApple</span>
+                <span>{state.workspace.name}</span>
               </div>
               <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
             </Button>
@@ -98,9 +138,9 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
                 <DropdownMenuItem>
                   <div className="flex items-center gap-2">
                     <div className="flex h-5 w-5 items-center justify-center rounded bg-yellow-500 text-xs font-bold text-black">
-                      P
+                      {state.workspace.name.charAt(0).toUpperCase()}
                     </div>
-                    <span>PineApple</span>
+                    <span>{state.workspace.name}</span>
                   </div>
                 </DropdownMenuItem>
               </DropdownMenuSubContent>
@@ -217,11 +257,18 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
                 <span>Views</span>
               </Link>
               <Link
-                href="/settings"
+                href="/settings/teams"
                 className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
               >
-                <Settings className="h-4 w-4" />
-                <span>Settings</span>
+                <Users className="h-4 w-4" />
+                <span>Teams</span>
+              </Link>
+              <Link
+                href="/settings/members"
+                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+              >
+                <UserPlus className="h-4 w-4" />
+                <span>Members</span>
               </Link>
             </div>
           )}
@@ -229,16 +276,25 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
 
         {/* Team Section */}
         <div className="mb-4">
-          <button
-            onClick={() => setTeamOpen(!teamOpen)}
-            className="flex w-full items-center gap-1 px-2 py-1 text-xs font-medium text-sidebar-foreground/60 hover:text-sidebar-foreground"
-          >
-            <ChevronDown className={cn("h-3 w-3 transition-transform", !teamOpen && "-rotate-90")} />
-            <span>Your teams</span>
-          </button>
+          <div className="flex items-center justify-between px-2 py-1">
+            <button
+              onClick={() => setTeamOpen(!teamOpen)}
+              className="flex items-center gap-1 text-xs font-medium text-sidebar-foreground/60 hover:text-sidebar-foreground"
+            >
+              <ChevronDown className={cn("h-3 w-3 transition-transform", !teamOpen && "-rotate-90")} />
+              <span>Your teams</span>
+            </button>
+            <Link
+              href="/settings/teams"
+              className="rounded p-0.5 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+              title="Add new team"
+            >
+              <Plus className="h-3.5 w-3.5" />
+            </Link>
+          </div>
           {teamOpen && (
             <div className="mt-0.5 space-y-0.5">
-              {mockTeams.map((team) => (
+              {teams.map((team) => (
                 <div key={team.id}>
                   <button
                     onClick={() => setSelectedTeam(team.id)}
@@ -257,21 +313,36 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
                     <div className="ml-4 mt-0.5 space-y-0.5 border-l border-sidebar-border pl-2">
                       <Link
                         href={`/team/${team.id}/issues`}
-                        className="flex items-center gap-2 rounded-md bg-sidebar-accent px-2 py-1.5 text-sm text-sidebar-accent-foreground"
+                        className={cn(
+                          "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm",
+                          pathname === `/team/${team.id}/issues`
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                            : "text-sidebar-foreground hover:bg-sidebar-accent"
+                        )}
                       >
                         <ListTodo className="h-4 w-4" />
                         <span>Issues</span>
                       </Link>
                       <Link
                         href={`/team/${team.id}/projects`}
-                        className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+                        className={cn(
+                          "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm",
+                          pathname === `/team/${team.id}/projects`
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                            : "text-sidebar-foreground hover:bg-sidebar-accent"
+                        )}
                       >
                         <FolderKanban className="h-4 w-4" />
                         <span>Projects</span>
                       </Link>
                       <Link
                         href={`/team/${team.id}/views`}
-                        className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+                        className={cn(
+                          "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm",
+                          pathname === `/team/${team.id}/views`
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                            : "text-sidebar-foreground hover:bg-sidebar-accent"
+                        )}
                       >
                         <LayoutGrid className="h-4 w-4" />
                         <span>Views</span>
@@ -297,13 +368,13 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
               <Upload className="h-4 w-4" />
               <span>Import issues</span>
             </Link>
-            <Link
-              href="/invite-people"
-              className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+            <button
+              onClick={() => setIsInviteDialogOpen(true)}
+              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
             >
               <UserPlus className="h-4 w-4" />
               <span>Invite people</span>
-            </Link>
+            </button>
             <Link
               href="/link-github"
               className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
@@ -321,6 +392,36 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
           <HelpCircle className="h-4 w-4" />
         </Button>
       </div>
+
+      {/* Invite People Dialog */}
+      <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-yellow-500 text-black text-xs font-bold">
+                {state.workspace.name.charAt(0).toUpperCase()}
+              </div>
+              Invite to {state.workspace.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Email</label>
+              <Textarea
+                value={inviteEmails}
+                onChange={(e) => setInviteEmails(e.target.value)}
+                placeholder="email@example.com, email2@example.com..."
+                className="min-h-[100px] resize-none"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={handleSendInvites} disabled={!inviteEmails.trim()}>
+              Send invites
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </aside>
   )
 }

@@ -5,7 +5,7 @@ import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
 import { mockProjects, mockIssues } from "@/lib/mock-data"
-import { Plus, Settings, ChevronDown, Calendar } from "lucide-react"
+import { Plus, ChevronDown, Calendar } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 
 export default function RoadmapPage() {
@@ -38,9 +38,6 @@ export default function RoadmapPage() {
             </Button>
             <Button variant="ghost" size="sm" className="h-8 text-sm">
               Months
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Settings className="h-4 w-4" />
             </Button>
             <Button size="sm" className="h-8 gap-1.5">
               <Plus className="h-4 w-4" />

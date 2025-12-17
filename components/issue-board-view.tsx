@@ -2,22 +2,60 @@
 
 import type React from "react"
 
-import { type Issue, mockUsers } from "@/lib/mock-data"
+import { type Issue, mockUsers, mockProjects } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { MoreHorizontal, Plus, Circle, Clock } from "lucide-react"
+import { MoreHorizontal, Plus, Circle, Clock, CheckCircle2, Archive, Trash2, Copy, Link2, FolderInput, Tag } from "lucide-react"
 import { useState } from "react"
+import { getLabelIcon } from "@/lib/label-icons"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+} from "@/components/ui/dropdown-menu"
 
 interface IssueBoardViewProps {
   issues: Issue[]
   onIssueClick?: (issue: Issue) => void
   onIssueStatusChange?: (issueId: string, newStatus: Issue["status"]) => void
   onCreateIssue?: (status: Issue["status"]) => void
+  onDeleteIssues?: (issueIds: string[]) => void
+  onMoveToProject?: (issueIds: string[], projectId: string | null) => void
+  onAddLabel?: (issueIds: string[], labelId: string) => void
 }
 
-export function IssueBoardView({ issues, onIssueClick, onIssueStatusChange, onCreateIssue }: IssueBoardViewProps) {
+export function IssueBoardView({ 
+  issues, 
+  onIssueClick, 
+  onIssueStatusChange, 
+  onCreateIssue,
+  onDeleteIssues,
+  onMoveToProject,
+  onAddLabel,
+}: IssueBoardViewProps) {
+  const { state } = useAppState()
+  const availableLabels = state.labels
+  
   const [draggedIssue, setDraggedIssue] = useState<Issue | null>(null)
   const [draggedOverColumn, setDraggedOverColumn] = useState<Issue["status"] | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+  const selectAllInColumn = (columnIssues: Issue[]) => {
+    const newSelected = new Set(selectedIds)
+    columnIssues.forEach(issue => newSelected.add(issue.id))
+    setSelectedIds(newSelected)
+  }
+
+  const archiveAllInColumn = (columnIssues: Issue[]) => {
+    const issueIds = columnIssues.map(i => i.id)
+    onDeleteIssues?.(issueIds)
+  }
 
   const groupedIssues = {
     backlog: issues.filter((i) => i.status === "backlog"),
@@ -127,9 +165,31 @@ export function IssueBoardView({ issues, onIssueClick, onIssueStatusChange, onCr
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-6 w-6">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem
+                      onSelect={() => selectAllInColumn(columnIssues)}
+                      disabled={columnIssues.length === 0}
+                    >
+                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                      Select all ({columnIssues.length})
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onSelect={() => archiveAllInColumn(columnIssues)}
+                      disabled={columnIssues.length === 0}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      <Archive className="mr-2 h-4 w-4" />
+                      Archive all
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
 
@@ -164,16 +224,107 @@ export function IssueBoardView({ issues, onIssueClick, onIssueStatusChange, onCr
                         <p className="mb-1 text-sm font-medium leading-tight">{issue.title}</p>
                         <span className="text-xs text-muted-foreground">{issue.identifier}</span>
                       </div>
-                      {getPriorityIcon(issue.priority)}
+                      <div className="flex items-center gap-1">
+                        {getPriorityIcon(issue.priority)}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-5 w-5 opacity-0 group-hover:opacity-100"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreHorizontal className="h-3 w-3" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48" onClick={(e) => e.stopPropagation()}>
+                            <DropdownMenuItem
+                              onSelect={() => {
+                                if (navigator?.clipboard) {
+                                  navigator.clipboard.writeText(issue.identifier)
+                                }
+                              }}
+                            >
+                              <Copy className="mr-2 h-4 w-4" />
+                              Copy ID
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() => {
+                                if (typeof window !== 'undefined' && navigator?.clipboard) {
+                                  navigator.clipboard.writeText(`${window.location.origin}/issue/${issue.id}`)
+                                }
+                              }}
+                            >
+                              <Link2 className="mr-2 h-4 w-4" />
+                              Copy link
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuSub>
+                              <DropdownMenuSubTrigger>
+                                <FolderInput className="mr-2 h-4 w-4" />
+                                Move to project
+                              </DropdownMenuSubTrigger>
+                              <DropdownMenuSubContent className="w-48">
+                                <DropdownMenuItem onSelect={() => onMoveToProject?.([issue.id], null)}>
+                                  <span className="text-muted-foreground">No project</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                {mockProjects.map((project) => (
+                                  <DropdownMenuItem 
+                                    key={project.id} 
+                                    onSelect={() => onMoveToProject?.([issue.id], project.id)}
+                                  >
+                                    <span className="mr-2">{project.icon}</span>
+                                    {project.name}
+                                  </DropdownMenuItem>
+                                ))}
+                              </DropdownMenuSubContent>
+                            </DropdownMenuSub>
+                            <DropdownMenuSub>
+                              <DropdownMenuSubTrigger>
+                                <Tag className="mr-2 h-4 w-4" />
+                                Add label
+                              </DropdownMenuSubTrigger>
+                              <DropdownMenuSubContent className="w-48">
+                                {availableLabels.map((label) => (
+                                  <DropdownMenuItem 
+                                    key={label.id} 
+                                    onSelect={() => onAddLabel?.([issue.id], label.id)}
+                                  >
+                                    <span className="mr-2" style={{ color: label.color }}>
+                                      {getLabelIcon(label.name)}
+                                    </span>
+                                    {label.name}
+                                  </DropdownMenuItem>
+                                ))}
+                              </DropdownMenuSubContent>
+                            </DropdownMenuSub>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onSelect={() => onDeleteIssues?.([issue.id])}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         {issue.labels.length > 0 && (
                           <div className="flex gap-1">
-                            {issue.labels.map((labelId) => (
-                              <div key={labelId} className="h-1.5 w-1.5 rounded-full bg-primary" />
-                            ))}
+                            {issue.labels.map((labelId) => {
+                              const label = availableLabels.find((l) => l.id === labelId)
+                              if (!label) return null
+                              return (
+                                <span key={labelId} style={{ color: label.color }}>
+                                  {getLabelIcon(label.name, "h-3 w-3")}
+                                </span>
+                              )
+                            })}
                           </div>
                         )}
                         {issue.estimate && <span className="text-xs text-muted-foreground">{issue.estimate}pt</span>}

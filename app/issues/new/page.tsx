@@ -15,12 +15,16 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { mockTeams, mockProjects, mockUsers, mockLabels } from "@/lib/mock-data"
+import { mockTeams, mockProjects, mockUsers } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 import { ArrowLeft, X } from "lucide-react"
 import Link from "next/link"
 
 export default function CreateIssuePage() {
   const router = useRouter()
+  const { state } = useAppState()
+  const availableLabels = state.labels
+  
   const [isCommandOpen, setIsCommandOpen] = useState(false)
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -223,7 +227,7 @@ export default function CreateIssuePage() {
             <div className="space-y-2">
               <Label>Labels</Label>
               <div className="flex flex-wrap gap-2">
-                {mockLabels.map((label) => {
+                {availableLabels.map((label) => {
                   const isSelected = selectedLabels.includes(label.id)
                   return (
                     <button

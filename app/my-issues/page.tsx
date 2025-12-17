@@ -5,8 +5,8 @@ import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
 import { FilterDropdown } from "@/components/filter-dropdown"
-import { mockIssues, type Issue } from "@/lib/mock-data"
-import { Settings } from "lucide-react"
+import { type Issue } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 import { IssueListView } from "@/components/issue-list-view"
 import { IssueBoardView } from "@/components/issue-board-view"
 import { IssueTableView } from "@/components/issue-table-view"
@@ -15,6 +15,9 @@ import { ViewSwitcher, type ViewType } from "@/components/view-switcher"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function MyIssuesPage() {
+  const { state, updateIssue, addIssue, deleteIssues } = useAppState()
+  const allIssues = state.issues
+  
   const [currentView, setCurrentView] = useState<ViewType>("list")
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -33,10 +36,8 @@ export default function MyIssuesPage() {
 
   // Get issues assigned to current user (using first user as example)
   const currentUserId = "1"
-  const [myIssues, setMyIssues] = useState<Issue[]>(mockIssues.filter((i) => i.assigneeId === currentUserId))
-  const [createdByMeIssues, setCreatedByMeIssues] = useState<Issue[]>(
-    mockIssues.filter((i) => i.assigneeId === currentUserId)
-  )
+  const myIssues = useMemo(() => allIssues.filter((i) => i.assigneeId === currentUserId), [allIssues])
+  const createdByMeIssues = useMemo(() => allIssues.filter((i) => i.createdBy === currentUserId), [allIssues])
 
   // Apply filters to issues
   const applyFilters = (issues: Issue[]) => {
@@ -66,69 +67,42 @@ export default function MyIssuesPage() {
   }
 
   const handleIssueStatusChange = (issueId: string, newStatus: Issue["status"]) => {
-    // Update assigned issues
-    setMyIssues((prevIssues) =>
-      prevIssues.map((issue) => (issue.id === issueId ? { ...issue, status: newStatus } : issue))
-    )
-
-    // Update created by me issues
-    setCreatedByMeIssues((prevIssues) =>
-      prevIssues.map((issue) => (issue.id === issueId ? { ...issue, status: newStatus } : issue))
-    )
-
-    // Update selected issue if it's the one being changed
+    updateIssue(issueId, { status: newStatus })
     if (selectedIssue?.id === issueId) {
       setSelectedIssue({ ...selectedIssue, status: newStatus })
     }
   }
 
   const handleDeleteIssues = (issueIds: string[]) => {
-    setMyIssues((prevIssues) => prevIssues.filter((issue) => !issueIds.includes(issue.id)))
-    setCreatedByMeIssues((prevIssues) => prevIssues.filter((issue) => !issueIds.includes(issue.id)))
+    deleteIssues(issueIds)
   }
 
   const handleMoveToProject = (issueIds: string[], projectId: string | null) => {
-    setMyIssues((prevIssues) =>
-      prevIssues.map((issue) =>
-        issueIds.includes(issue.id) ? { ...issue, projectId } : issue
-      )
-    )
-    setCreatedByMeIssues((prevIssues) =>
-      prevIssues.map((issue) =>
-        issueIds.includes(issue.id) ? { ...issue, projectId } : issue
-      )
-    )
+    issueIds.forEach((issueId) => {
+      updateIssue(issueId, { projectId })
+    })
   }
 
   const handleAddLabel = (issueIds: string[], labelId: string) => {
-    setMyIssues((prevIssues) =>
-      prevIssues.map((issue) =>
-        issueIds.includes(issue.id)
-          ? { ...issue, labels: issue.labels.includes(labelId) ? issue.labels : [...issue.labels, labelId] }
-          : issue
-      )
-    )
-    setCreatedByMeIssues((prevIssues) =>
-      prevIssues.map((issue) =>
-        issueIds.includes(issue.id)
-          ? { ...issue, labels: issue.labels.includes(labelId) ? issue.labels : [...issue.labels, labelId] }
-          : issue
-      )
-    )
+    issueIds.forEach((issueId) => {
+      const issue = allIssues.find((i) => i.id === issueId)
+      if (issue && !issue.labels.includes(labelId)) {
+        updateIssue(issueId, { labels: [...issue.labels, labelId] })
+      }
+    })
   }
 
   const handleCreateIssue = (status: Issue["status"] = "todo") => {
-    const allIssues = [...myIssues, ...createdByMeIssues]
     const newId = (Math.max(...allIssues.map(i => parseInt(i.id)), 0) + 1).toString()
     const tesNumbers = allIssues
       .map(i => {
-        const match = i.identifier.match(/TES-(\d+)/)
+        const match = i.identifier.match(/TASK-(\d+)/)
         return match ? parseInt(match[1]) : 0
       })
-    const nextTesNumber = Math.max(...tesNumbers, 0) + 1
+    const nextTaskNumber = Math.max(...tesNumbers, 0) + 1
     const newIssue: Issue = {
       id: newId,
-      identifier: `TES-${nextTesNumber}`,
+      identifier: `TASK-${nextTaskNumber}`,
       title: "New issue",
       description: "",
       status,
@@ -143,23 +117,13 @@ export default function MyIssuesPage() {
       estimate: null,
       createdBy: currentUserId,
     }
-    setMyIssues((prevIssues) => [newIssue, ...prevIssues])
-    setCreatedByMeIssues((prevIssues) => [newIssue, ...prevIssues])
+    addIssue(newIssue)
     setSelectedIssue(newIssue)
     setIsModalOpen(true)
   }
 
   const handleIssueUpdate = (issueId: string, updates: Partial<Issue>) => {
-    setMyIssues((prevIssues) =>
-      prevIssues.map((issue) =>
-        issue.id === issueId ? { ...issue, ...updates, updatedAt: new Date().toISOString() } : issue
-      )
-    )
-    setCreatedByMeIssues((prevIssues) =>
-      prevIssues.map((issue) =>
-        issue.id === issueId ? { ...issue, ...updates, updatedAt: new Date().toISOString() } : issue
-      )
-    )
+    updateIssue(issueId, updates)
     if (selectedIssue?.id === issueId) {
       setSelectedIssue({ ...selectedIssue, ...updates })
     }
@@ -177,9 +141,6 @@ export default function MyIssuesPage() {
 
           <div className="flex items-center gap-2">
             <FilterDropdown filters={filters} onFiltersChange={setFilters} />
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Settings className="h-4 w-4" />
-            </Button>
             <ViewSwitcher currentView={currentView} onViewChange={setCurrentView} />
           </div>
         </header>
@@ -228,6 +189,9 @@ export default function MyIssuesPage() {
                   onIssueClick={handleIssueClick}
                   onIssueStatusChange={handleIssueStatusChange}
                   onCreateIssue={handleCreateIssue}
+                  onDeleteIssues={handleDeleteIssues}
+                  onMoveToProject={handleMoveToProject}
+                  onAddLabel={handleAddLabel}
                 />
               )}
               {currentView === "table" && (
@@ -259,6 +223,9 @@ export default function MyIssuesPage() {
                   onIssueClick={handleIssueClick}
                   onIssueStatusChange={handleIssueStatusChange}
                   onCreateIssue={handleCreateIssue}
+                  onDeleteIssues={handleDeleteIssues}
+                  onMoveToProject={handleMoveToProject}
+                  onAddLabel={handleAddLabel}
                 />
               )}
               {currentView === "table" && (

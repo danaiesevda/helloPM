@@ -229,7 +229,7 @@ export const mockProjects: Project[] = [
 export const mockIssues: Issue[] = [
   {
     id: "1",
-    identifier: "TES-1",
+    identifier: "TASK-1",
     title: "Get familiar with Linear",
     description: "Explore the Linear interface and learn how to use it effectively for project management",
     status: "todo",
@@ -246,7 +246,7 @@ export const mockIssues: Issue[] = [
   },
   {
     id: "2",
-    identifier: "TES-2",
+    identifier: "TASK-2",
     title: "Set up your teams",
     description: "Create teams and add team members with appropriate roles and permissions",
     status: "todo",
@@ -263,7 +263,7 @@ export const mockIssues: Issue[] = [
   },
   {
     id: "3",
-    identifier: "TES-3",
+    identifier: "TASK-3",
     title: "Connect your tools",
     description: "Integrate with GitHub, Slack, and other essential development tools",
     status: "todo",
@@ -280,7 +280,7 @@ export const mockIssues: Issue[] = [
   },
   {
     id: "4",
-    identifier: "TES-4",
+    identifier: "TASK-4",
     title: "Import your data",
     description: "Import existing issues and projects from other project management tools",
     status: "todo",
@@ -297,7 +297,7 @@ export const mockIssues: Issue[] = [
   },
   {
     id: "5",
-    identifier: "TES-5",
+    identifier: "TASK-5",
     title: "Design new dashboard",
     description: "Create mockups for the new analytics dashboard with key metrics and charts",
     status: "in-progress",
@@ -314,7 +314,7 @@ export const mockIssues: Issue[] = [
   },
   {
     id: "6",
-    identifier: "TES-6",
+    identifier: "TASK-6",
     title: "Fix login bug",
     description: "Users are unable to login with Google OAuth. Investigation shows token refresh issue",
     status: "in-progress",
@@ -433,7 +433,7 @@ export const mockNotifications: Notification[] = [
   {
     id: "1",
     type: "assigned",
-    title: "You were assigned to TES-6",
+    title: "You were assigned to TASK-6",
     message: "Alex Rivera assigned you to Fix login bug",
     issueId: "6",
     isRead: false,
@@ -443,7 +443,7 @@ export const mockNotifications: Notification[] = [
   {
     id: "2",
     type: "comment",
-    title: "New comment on TES-5",
+    title: "New comment on TASK-5",
     message: "Jordan Lee commented on Design new dashboard",
     issueId: "5",
     isRead: false,
@@ -453,7 +453,7 @@ export const mockNotifications: Notification[] = [
   {
     id: "3",
     type: "mention",
-    title: "You were mentioned in TES-2",
+    title: "You were mentioned in TASK-2",
     message: "Alex Rivera mentioned you in Set up your teams",
     issueId: "2",
     isRead: true,
@@ -463,7 +463,7 @@ export const mockNotifications: Notification[] = [
   {
     id: "4",
     type: "status_change",
-    title: "TES-5 status changed",
+    title: "TASK-5 status changed",
     message: "Sarah Chen moved Design new dashboard to In Progress",
     issueId: "5",
     isRead: true,

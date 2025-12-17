@@ -5,7 +5,7 @@ import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
 import { mockTeams, mockProjects, mockIssues } from "@/lib/mock-data"
-import { Filter, Plus, Settings, LayoutGrid, List, Search } from "lucide-react"
+import { Filter, Plus, LayoutGrid, List, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
@@ -50,9 +50,6 @@ export default function TeamProjectsPage({
             </div>
             <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
               <Filter className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-              <Settings className="h-4 w-4" />
             </Button>
             <div className="flex items-center gap-1 rounded-lg border border-border bg-background p-1 shrink-0">
               <Button
@@ -203,6 +200,7 @@ export default function TeamProjectsPage({
     </div>
   )
 }
+
 
 
 

@@ -9,13 +9,16 @@ import { IssueDetailModal } from "@/components/issue-detail-modal"
 import { CommandPalette } from "@/components/command-palette"
 import { FilterDropdown } from "@/components/filter-dropdown"
 import { ViewSwitcher, type ViewType } from "@/components/view-switcher"
-import { mockIssues, type Issue } from "@/lib/mock-data"
+import { type Issue } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 import { Button } from "@/components/ui/button"
-import { Plus, Bell, Settings, ChevronDown, Search } from "lucide-react"
+import { Plus, Bell, ChevronDown, Search } from "lucide-react"
 
 export default function Home() {
+  const { state, updateIssue, addIssue, deleteIssues } = useAppState()
+  const issues = state.issues
+  
   const [currentView, setCurrentView] = useState<ViewType>("list")
-  const [issues, setIssues] = useState<Issue[]>(mockIssues)
   const [draggedIssue, setDraggedIssue] = useState<Issue | null>(null)
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -38,21 +41,13 @@ export default function Home() {
 
   const handleDrop = (status: Issue["status"]) => {
     if (draggedIssue) {
-      setIssues((prevIssues) =>
-        prevIssues.map((issue) =>
-          issue.id === draggedIssue.id ? { ...issue, status } : issue
-        )
-      )
+      updateIssue(draggedIssue.id, { status })
     }
     setDraggedIssue(null)
   }
 
   const handleIssueStatusChange = (issueId: string, newStatus: Issue["status"]) => {
-    setIssues((prevIssues) =>
-      prevIssues.map((issue) =>
-        issue.id === issueId ? { ...issue, status: newStatus } : issue
-      )
-    )
+    updateIssue(issueId, { status: newStatus })
     // Update selected issue if it's the one being changed
     if (selectedIssue?.id === issueId) {
       setSelectedIssue({ ...selectedIssue, status: newStatus })
@@ -65,33 +60,26 @@ export default function Home() {
   }
 
   const handleDeleteIssues = (issueIds: string[]) => {
-    setIssues((prevIssues) => prevIssues.filter((issue) => !issueIds.includes(issue.id)))
+    deleteIssues(issueIds)
   }
 
   const handleMoveToProject = (issueIds: string[], projectId: string | null) => {
-    setIssues((prevIssues) =>
-      prevIssues.map((issue) =>
-        issueIds.includes(issue.id) ? { ...issue, projectId } : issue
-      )
-    )
+    issueIds.forEach((issueId) => {
+      updateIssue(issueId, { projectId })
+    })
   }
 
   const handleAddLabel = (issueIds: string[], labelId: string) => {
-    setIssues((prevIssues) =>
-      prevIssues.map((issue) =>
-        issueIds.includes(issue.id)
-          ? { ...issue, labels: issue.labels.includes(labelId) ? issue.labels : [...issue.labels, labelId] }
-          : issue
-      )
-    )
+    issueIds.forEach((issueId) => {
+      const issue = issues.find((i) => i.id === issueId)
+      if (issue && !issue.labels.includes(labelId)) {
+        updateIssue(issueId, { labels: [...issue.labels, labelId] })
+      }
+    })
   }
 
   const handleIssueUpdate = (issueId: string, updates: Partial<Issue>) => {
-    setIssues((prevIssues) =>
-      prevIssues.map((issue) =>
-        issue.id === issueId ? { ...issue, ...updates, updatedAt: new Date().toISOString() } : issue
-      )
-    )
+    updateIssue(issueId, updates)
     // Update selected issue if it's the one being changed
     if (selectedIssue?.id === issueId) {
       setSelectedIssue({ ...selectedIssue, ...updates })
@@ -103,13 +91,13 @@ export default function Home() {
     // Find the highest TES number from existing identifiers
     const tesNumbers = issues
       .map(i => {
-        const match = i.identifier.match(/TES-(\d+)/)
+        const match = i.identifier.match(/TASK-(\d+)/)
         return match ? parseInt(match[1]) : 0
       })
-    const nextTesNumber = Math.max(...tesNumbers, 0) + 1
+    const nextTaskNumber = Math.max(...tesNumbers, 0) + 1
     const newIssue: Issue = {
       id: newId,
-      identifier: `TES-${nextTesNumber}`,
+      identifier: `TASK-${nextTaskNumber}`,
       title: "New issue",
       description: "",
       status,
@@ -124,7 +112,7 @@ export default function Home() {
       estimate: null,
       createdBy: "1",
     }
-    setIssues((prevIssues) => [newIssue, ...prevIssues])
+    addIssue(newIssue)
     // Open the modal to edit the new issue
     setSelectedIssue(newIssue)
     setIsModalOpen(true)
@@ -163,9 +151,6 @@ export default function Home() {
             </Button>
             <Button variant="ghost" size="sm" className="h-7 text-sm shrink-0 whitespace-nowrap">
               Backlog
-            </Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0">
-              <Settings className="h-4 w-4" />
             </Button>
           </div>
 
@@ -226,6 +211,9 @@ export default function Home() {
               onIssueClick={handleIssueClick}
               onIssueStatusChange={handleIssueStatusChange}
               onCreateIssue={handleCreateIssue}
+              onDeleteIssues={handleDeleteIssues}
+              onMoveToProject={handleMoveToProject}
+              onAddLabel={handleAddLabel}
             />
           )}
           {currentView === "table" && (

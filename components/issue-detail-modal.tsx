@@ -1,12 +1,16 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { type Issue, mockUsers, mockProjects, mockLabels } from "@/lib/mock-data"
+import { type Issue, mockUsers, mockProjects } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import {
   X,
   MoreHorizontal,
@@ -20,6 +24,7 @@ import {
   Trash2,
   Copy,
   ExternalLink,
+  CalendarIcon,
 } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
@@ -30,6 +35,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { RichTextEditor } from "@/components/rich-text-editor"
+import { getLabelIcon } from "@/lib/label-icons"
 
 interface IssueDetailModalProps {
   issue: Issue | null
@@ -39,13 +45,21 @@ interface IssueDetailModalProps {
 }
 
 export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: IssueDetailModalProps) {
+  const { state } = useAppState()
+  const availableLabels = state.labels
+  
   const [title, setTitle] = useState(issue?.title || "")
   const [description, setDescription] = useState(issue?.description || "")
   const [status, setStatus] = useState(issue?.status || "todo")
   const [priority, setPriority] = useState(issue?.priority || "none")
   const [assigneeId, setAssigneeId] = useState(issue?.assigneeId || "")
+  const [projectId, setProjectId] = useState(issue?.projectId || "")
   const [estimate, setEstimate] = useState<string>(issue?.estimate?.toString() || "")
+  const [labels, setLabels] = useState<string[]>(issue?.labels || [])
+  const [dueDate, setDueDate] = useState<Date | undefined>(issue?.dueDate ? new Date(issue.dueDate) : undefined)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [isLabelsOpen, setIsLabelsOpen] = useState(false)
+  const [isDueDateOpen, setIsDueDateOpen] = useState(false)
 
   // Update state when issue changes
   useEffect(() => {
@@ -55,14 +69,17 @@ export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: I
       setStatus(issue.status || "todo")
       setPriority(issue.priority || "none")
       setAssigneeId(issue.assigneeId || "")
+      setProjectId(issue.projectId || "")
       setEstimate(issue.estimate?.toString() || "")
+      setLabels(issue.labels || [])
+      setDueDate(issue.dueDate ? new Date(issue.dueDate) : undefined)
     }
   }, [issue])
 
   if (!issue) return null
 
   const assignee = mockUsers.find((u) => u.id === assigneeId)
-  const project = mockProjects.find((p) => p.id === issue.projectId)
+  const project = mockProjects.find((p) => p.id === projectId)
 
   const getPriorityIcon = (priority: Issue["priority"]) => {
     const colors = {
@@ -150,7 +167,12 @@ export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: I
                 <Textarea
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  onBlur={() => setIsEditingTitle(false)}
+                  onBlur={() => {
+                    setIsEditingTitle(false)
+                    if (title !== issue.title) {
+                      onIssueUpdate?.(issue.id, { title })
+                    }
+                  }}
                   className="mb-4 text-2xl font-semibold resize-none border-none p-0 focus-visible:ring-0"
                   autoFocus
                 />
@@ -166,7 +188,13 @@ export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: I
               {/* Description Editor */}
               <div className="mb-6">
                 <h3 className="mb-2 text-sm font-medium text-muted-foreground">Description</h3>
-                <RichTextEditor value={description} onChange={setDescription} />
+                <RichTextEditor 
+                  value={description} 
+                  onChange={(value) => {
+                    setDescription(value)
+                    onIssueUpdate?.(issue.id, { description: value })
+                  }} 
+                />
               </div>
 
               {/* Activity / Comments Section */}
@@ -292,39 +320,98 @@ export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: I
                     Labels
                   </label>
                   <div className="flex flex-wrap gap-1">
-                    {issue.labels.map((labelId) => {
-                      const label = mockLabels.find((l) => l.id === labelId)
+                    {labels.map((labelId) => {
+                      const label = availableLabels.find((l) => l.id === labelId)
                       if (!label) return null
                       return (
                         <Badge
                           key={label.id}
                           variant="secondary"
-                          className="text-xs"
+                          className="text-xs cursor-pointer hover:opacity-80 gap-1"
                           style={{ backgroundColor: `${label.color}20`, color: label.color }}
+                          onClick={() => {
+                            const newLabels = labels.filter((id) => id !== labelId)
+                            setLabels(newLabels)
+                            onIssueUpdate?.(issue.id, { labels: newLabels })
+                          }}
                         >
+                          {getLabelIcon(label.name)}
                           {label.name}
+                          <X className="ml-0.5 h-3 w-3" />
                         </Badge>
                       )
                     })}
-                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
-                      + Add
-                    </Button>
+                    <Popover open={isLabelsOpen} onOpenChange={setIsLabelsOpen}>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
+                          + Add
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56 p-2" side="left" align="start">
+                        <div className="space-y-1">
+                          <p className="text-xs font-medium text-muted-foreground mb-2">Select labels</p>
+                          {availableLabels.map((label) => {
+                            const isSelected = labels.includes(label.id)
+                            return (
+                              <div
+                                key={label.id}
+                                className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent cursor-pointer"
+                                onClick={() => {
+                                  const newLabels = isSelected
+                                    ? labels.filter((id) => id !== label.id)
+                                    : [...labels, label.id]
+                                  setLabels(newLabels)
+                                  onIssueUpdate?.(issue.id, { labels: newLabels })
+                                }}
+                              >
+                                <Checkbox checked={isSelected} />
+                                <span style={{ color: label.color }}>
+                                  {getLabelIcon(label.name)}
+                                </span>
+                                <span className="text-sm">{label.name}</span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
 
                 {/* Project */}
-                {project && (
-                  <div>
-                    <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                      <Target className="h-3 w-3" />
-                      Project
-                    </label>
-                    <div className="flex items-center gap-2 rounded-md border border-border bg-background px-2 py-1.5 text-sm">
-                      <span>{project.icon}</span>
-                      <span>{project.name}</span>
-                    </div>
-                  </div>
-                )}
+                <div>
+                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    <Target className="h-3 w-3" />
+                    Project
+                  </label>
+                  <Select 
+                    value={projectId || "no-project"} 
+                    onValueChange={(value) => {
+                      const newProjectId = value === "no-project" ? null : value
+                      setProjectId(newProjectId || "")
+                      onIssueUpdate?.(issue.id, { projectId: newProjectId })
+                    }}
+                  >
+                    <SelectTrigger 
+                      className="h-auto min-h-8 w-full text-sm [&_[data-slot=select-value]]:[display:block] [&_[data-slot=select-value]]:[overflow:visible] [&_[data-slot=select-value]]:[-webkit-line-clamp:unset] [&_[data-slot=select-value]]:whitespace-normal"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent side="left" align="start" sideOffset={4}>
+                      <SelectItem value="no-project">
+                        <span className="text-muted-foreground">No project</span>
+                      </SelectItem>
+                      {mockProjects.map((proj) => (
+                        <SelectItem key={proj.id} value={proj.id}>
+                          <div className="flex items-center gap-2">
+                            <span>{proj.icon}</span>
+                            <span>{proj.name}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
                 {/* Due Date */}
                 <div>
@@ -332,9 +419,42 @@ export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: I
                     <Calendar className="h-3 w-3" />
                     Due date
                   </label>
-                  <Button variant="outline" size="sm" className="h-8 w-full justify-start text-sm bg-transparent whitespace-normal text-left">
-                    {issue.dueDate ? new Date(issue.dueDate).toLocaleDateString() : "No due date"}
-                  </Button>
+                  <Popover open={isDueDateOpen} onOpenChange={setIsDueDateOpen}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-8 w-full justify-start text-sm bg-transparent whitespace-normal text-left gap-2">
+                        <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                        {dueDate ? dueDate.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : "No due date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" side="left" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={dueDate}
+                        onSelect={(date) => {
+                          setDueDate(date)
+                          onIssueUpdate?.(issue.id, { dueDate: date ? date.toISOString() : null })
+                          setIsDueDateOpen(false)
+                        }}
+                        initialFocus
+                      />
+                      {dueDate && (
+                        <div className="border-t p-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full text-destructive hover:text-destructive"
+                            onClick={() => {
+                              setDueDate(undefined)
+                              onIssueUpdate?.(issue.id, { dueDate: null })
+                              setIsDueDateOpen(false)
+                            }}
+                          >
+                            Clear due date
+                          </Button>
+                        </div>
+                      )}
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
                 {/* Estimate */}

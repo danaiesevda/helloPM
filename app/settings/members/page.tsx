@@ -27,10 +27,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { mockData } from "@/lib/mock-data"
-import { User, Mail, MoreHorizontal, ArrowLeft, Edit, Trash2, UserX } from "lucide-react"
+import { useAppState } from "@/lib/store"
+import { User, Plus, MoreHorizontal, ArrowLeft, Edit, Trash2, UserX } from "lucide-react"
 
 export default function MembersSettingsPage() {
-  const [members, setMembers] = useState(mockData.users)
+  const { state, addUser, updateUser, deleteUser } = useAppState()
+  const members = state.users
+  
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
   const [inviteEmail, setInviteEmail] = useState("")
   const [inviteRole, setInviteRole] = useState("Member")
@@ -47,22 +50,18 @@ export default function MembersSettingsPage() {
       teamIds: [],
     }
 
-    setMembers([...members, newMember])
+    addUser(newMember)
     setInviteEmail("")
     setInviteRole("Member")
     setIsInviteDialogOpen(false)
   }
 
   const handleRemoveMember = (memberId: string) => {
-    setMembers(members.filter((member) => member.id !== memberId))
+    deleteUser(memberId)
   }
 
   const handleChangeRole = (memberId: string, newRole: string) => {
-    setMembers(
-      members.map((member) =>
-        member.id === memberId ? { ...member, role: newRole.toLowerCase() as "admin" | "member" | "guest" } : member
-      )
-    )
+    updateUser(memberId, { role: newRole.toLowerCase() as "admin" | "member" | "guest" })
   }
 
   return (
@@ -128,7 +127,7 @@ export default function MembersSettingsPage() {
                 <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
                   <DialogTrigger asChild>
                     <Button size="sm">
-                      <Mail className="w-4 h-4 mr-2" />
+                      <Plus className="w-4 h-4 mr-2" />
                       Invite members
                     </Button>
                   </DialogTrigger>

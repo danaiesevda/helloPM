@@ -5,8 +5,7 @@ import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
 import { mockProjects, mockIssues } from "@/lib/mock-data"
-import { ArrowLeft, Settings, MoreHorizontal, Plus } from "lucide-react"
-import Link from "next/link"
+import { ArrowLeft, MoreHorizontal, Plus } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { IssueCard } from "@/components/issue-card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -66,9 +65,6 @@ export default function ProjectDetailPage({
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">{project.description}</p>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Settings className="h-4 w-4" />
-              </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
