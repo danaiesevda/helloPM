@@ -12,13 +12,13 @@ import { IssueBoardView } from "@/components/issue-board-view"
 import { IssueTableView } from "@/components/issue-table-view"
 import { IssueDetailModal } from "@/components/issue-detail-modal"
 import { ViewSwitcher, type ViewType } from "@/components/view-switcher"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function MyIssuesPage() {
   const { state, updateIssue, addIssue, deleteIssues } = useAppState()
   const allIssues = state.issues
   
   const [currentView, setCurrentView] = useState<ViewType>("list")
+  const [activeTab, setActiveTab] = useState<"assigned" | "created" | "subscribed">("assigned")
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCommandOpen, setIsCommandOpen] = useState(false)
@@ -134,117 +134,118 @@ export default function MyIssuesPage() {
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex items-center justify-between border-b border-border px-4 py-3">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-semibold">My Issues</h1>
+        <header className="flex items-center justify-between border-b border-border px-4 py-3 gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <h1 className="text-xl font-semibold shrink-0">My Issues</h1>
+            <Button 
+              variant={activeTab === "assigned" ? "secondary" : "ghost"} 
+              size="sm" 
+              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              onClick={() => setActiveTab("assigned")}
+            >
+              Assigned to me
+              <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">{filteredMyIssues.length}</span>
+            </Button>
+            <Button 
+              variant={activeTab === "created" ? "secondary" : "ghost"} 
+              size="sm" 
+              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              onClick={() => setActiveTab("created")}
+            >
+              Created by me
+              <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">{filteredCreatedByMeIssues.length}</span>
+            </Button>
+            <Button 
+              variant={activeTab === "subscribed" ? "secondary" : "ghost"} 
+              size="sm" 
+              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              onClick={() => setActiveTab("subscribed")}
+            >
+              Subscribed
+            </Button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <FilterDropdown filters={filters} onFiltersChange={setFilters} />
             <ViewSwitcher currentView={currentView} onViewChange={setCurrentView} />
           </div>
         </header>
 
-        <Tabs defaultValue="assigned" className="flex flex-1 flex-col overflow-hidden">
-          <div className="border-b border-border px-4">
-            <TabsList className="h-10 bg-transparent p-0">
-              <TabsTrigger
-                value="assigned"
-                className="data-[state=active]:border-b-2 data-[state=active]:border-primary"
-              >
-                Assigned to me
-                <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">{filteredMyIssues.length}</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="created"
-                className="data-[state=active]:border-b-2 data-[state=active]:border-primary"
-              >
-                Created by me
-                <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">{filteredCreatedByMeIssues.length}</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="subscribed"
-                className="data-[state=active]:border-b-2 data-[state=active]:border-primary"
-              >
-                Subscribed
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
-          <div className="flex-1 overflow-auto px-4 py-3">
-            <TabsContent value="assigned" className="m-0">
+        <div className="flex-1 overflow-auto px-4 py-3">
+          {activeTab === "assigned" && (
+            <>
               {currentView === "list" && (
-                <IssueListView 
-                  issues={filteredMyIssues} 
-                  onIssueClick={handleIssueClick}
-                  onDeleteIssues={handleDeleteIssues}
-                  onMoveToProject={handleMoveToProject}
-                  onAddLabel={handleAddLabel}
-                  onCreateIssue={handleCreateIssue}
-                />
-              )}
-              {currentView === "board" && (
-                <IssueBoardView
-                  issues={filteredMyIssues}
-                  onIssueClick={handleIssueClick}
-                  onIssueStatusChange={handleIssueStatusChange}
-                  onCreateIssue={handleCreateIssue}
-                  onDeleteIssues={handleDeleteIssues}
-                  onMoveToProject={handleMoveToProject}
-                  onAddLabel={handleAddLabel}
-                />
-              )}
-              {currentView === "table" && (
-                <IssueTableView 
-                  issues={filteredMyIssues} 
-                  onIssueClick={handleIssueClick}
-                  onDeleteIssues={handleDeleteIssues}
-                  onMoveToProject={handleMoveToProject}
-                  onAddLabel={handleAddLabel}
-                  onCreateIssue={handleCreateIssue}
-                />
-              )}
-            </TabsContent>
-
-            <TabsContent value="created" className="m-0">
+              <IssueListView 
+                issues={filteredMyIssues} 
+                onIssueClick={handleIssueClick}
+                onDeleteIssues={handleDeleteIssues}
+                onMoveToProject={handleMoveToProject}
+                onAddLabel={handleAddLabel}
+                onCreateIssue={handleCreateIssue}
+              />
+            )}
+            {currentView === "board" && (
+              <IssueBoardView
+                issues={filteredMyIssues}
+                onIssueClick={handleIssueClick}
+                onIssueStatusChange={handleIssueStatusChange}
+                onCreateIssue={handleCreateIssue}
+                onDeleteIssues={handleDeleteIssues}
+                onMoveToProject={handleMoveToProject}
+                onAddLabel={handleAddLabel}
+              />
+            )}
+            {currentView === "table" && (
+              <IssueTableView 
+                issues={filteredMyIssues} 
+                onIssueClick={handleIssueClick}
+                onDeleteIssues={handleDeleteIssues}
+                onMoveToProject={handleMoveToProject}
+                onAddLabel={handleAddLabel}
+                onCreateIssue={handleCreateIssue}
+              />
+            )}
+            </>
+          )}
+          {activeTab === "created" && (
+            <>
               {currentView === "list" && (
-                <IssueListView 
-                  issues={filteredCreatedByMeIssues} 
-                  onIssueClick={handleIssueClick}
-                  onDeleteIssues={handleDeleteIssues}
-                  onMoveToProject={handleMoveToProject}
-                  onAddLabel={handleAddLabel}
-                  onCreateIssue={handleCreateIssue}
-                />
-              )}
-              {currentView === "board" && (
-                <IssueBoardView
-                  issues={filteredCreatedByMeIssues}
-                  onIssueClick={handleIssueClick}
-                  onIssueStatusChange={handleIssueStatusChange}
-                  onCreateIssue={handleCreateIssue}
-                  onDeleteIssues={handleDeleteIssues}
-                  onMoveToProject={handleMoveToProject}
-                  onAddLabel={handleAddLabel}
-                />
-              )}
-              {currentView === "table" && (
-                <IssueTableView 
-                  issues={filteredCreatedByMeIssues} 
-                  onIssueClick={handleIssueClick}
-                  onDeleteIssues={handleDeleteIssues}
-                  onMoveToProject={handleMoveToProject}
-                  onAddLabel={handleAddLabel}
-                  onCreateIssue={handleCreateIssue}
-                />
-              )}
-            </TabsContent>
-
-            <TabsContent value="subscribed" className="m-0">
-              <p className="text-sm text-muted-foreground">No subscribed issues yet</p>
-            </TabsContent>
-          </div>
-        </Tabs>
+              <IssueListView 
+                issues={filteredCreatedByMeIssues} 
+                onIssueClick={handleIssueClick}
+                onDeleteIssues={handleDeleteIssues}
+                onMoveToProject={handleMoveToProject}
+                onAddLabel={handleAddLabel}
+                onCreateIssue={handleCreateIssue}
+              />
+            )}
+            {currentView === "board" && (
+              <IssueBoardView
+                issues={filteredCreatedByMeIssues}
+                onIssueClick={handleIssueClick}
+                onIssueStatusChange={handleIssueStatusChange}
+                onCreateIssue={handleCreateIssue}
+                onDeleteIssues={handleDeleteIssues}
+                onMoveToProject={handleMoveToProject}
+                onAddLabel={handleAddLabel}
+              />
+            )}
+            {currentView === "table" && (
+              <IssueTableView 
+                issues={filteredCreatedByMeIssues} 
+                onIssueClick={handleIssueClick}
+                onDeleteIssues={handleDeleteIssues}
+                onMoveToProject={handleMoveToProject}
+                onAddLabel={handleAddLabel}
+                onCreateIssue={handleCreateIssue}
+              />
+            )}
+            </>
+          )}
+          {activeTab === "subscribed" && (
+            <p className="text-sm text-muted-foreground">No subscribed issues yet</p>
+          )}
+        </div>
       </main>
 
       <IssueDetailModal 

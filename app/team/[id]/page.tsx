@@ -5,15 +5,17 @@ import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { mockTeams, mockUsers, mockIssues, mockProjects } from "@/lib/mock-data"
+import { mockUsers, mockIssues, mockProjects } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 import { UserPlus, MoreHorizontal, TrendingUp } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 
 export default function TeamPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
+  const { state } = useAppState()
   const [isCommandOpen, setIsCommandOpen] = useState(false)
-  const team = mockTeams.find((t) => t.id === id)
+  const team = state.teams.find((t) => t.id === id)
 
   if (!team) {
     return <div>Team not found</div>

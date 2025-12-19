@@ -1,4 +1,4 @@
-// Mock data for the Linear clone
+// Mock data for the PineApple clone
 
 export interface User {
   id: string
@@ -161,11 +161,11 @@ export const mockTeams: Team[] = [
 
 export const mockLabels: Label[] = [
   { id: "1", name: "Bug", color: "#ef4444" },
-  { id: "2", name: "Feature", color: "#3b82f6" },
-  { id: "3", name: "Improvement", color: "#8b5cf6" },
-  { id: "4", name: "Documentation", color: "#10b981" },
-  { id: "5", name: "Performance", color: "#f59e0b" },
-  { id: "6", name: "Security", color: "#dc2626" },
+  { id: "2", name: "Feature", color: "#8b5cf6" },
+  { id: "3", name: "Improvement", color: "#22c55e" },
+  { id: "4", name: "Documentation", color: "#06b6d4" },
+  { id: "5", name: "Performance", color: "#84cc16" },
+  { id: "6", name: "Security", color: "#f87171" },
 ]
 
 export const mockStatuses: Status[] = [
@@ -230,8 +230,8 @@ export const mockIssues: Issue[] = [
   {
     id: "1",
     identifier: "TASK-1",
-    title: "Get familiar with Linear",
-    description: "Explore the Linear interface and learn how to use it effectively for project management",
+    title: "Get familiar with PineApple",
+    description: "Explore the PineApple interface and learn how to use it effectively for project management",
     status: "todo",
     priority: "medium",
     assigneeId: "1",

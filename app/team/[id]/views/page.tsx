@@ -6,7 +6,7 @@ import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { mockTeams } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 import Link from "next/link"
 import { Plus, MoreHorizontal, Star, LayoutGrid, Trash2, Edit2 } from "lucide-react"
 import {
@@ -76,6 +76,7 @@ export default function TeamViewsPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
+  const { state } = useAppState()
   const [isCommandOpen, setIsCommandOpen] = useState(false)
   const [views, setViews] = useState<View[]>(initialViews)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -85,7 +86,7 @@ export default function TeamViewsPage({
   const [newViewDescription, setNewViewDescription] = useState("")
   const [newViewIcon, setNewViewIcon] = useState(viewIcons[0])
   
-  const team = mockTeams.find((t) => t.id === id)
+  const team = state.teams.find((t) => t.id === id)
 
   if (!team) {
     return <div>Team not found</div>

@@ -3,8 +3,10 @@
 import { use, useState } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
+import { CreateProjectDialog } from "@/components/create-project-dialog"
 import { Button } from "@/components/ui/button"
-import { mockTeams, mockProjects, mockIssues } from "@/lib/mock-data"
+import { mockIssues } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 import { Filter, Plus, LayoutGrid, List, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
@@ -16,15 +18,17 @@ export default function TeamProjectsPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
+  const { state } = useAppState()
   const [isCommandOpen, setIsCommandOpen] = useState(false)
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const team = mockTeams.find((t) => t.id === id)
+  const team = state.teams.find((t) => t.id === id)
 
   if (!team) {
     return <div>Team not found</div>
   }
 
-  const teamProjects = mockProjects.filter((p) => p.teamId === team.id)
+  const teamProjects = state.projects.filter((p) => p.teamId === team.id)
 
   return (
     <div className="flex h-screen bg-background">
@@ -69,7 +73,7 @@ export default function TeamProjectsPage({
                 <List className="h-3.5 w-3.5" />
               </Button>
             </div>
-            <Button size="sm" className="h-8 gap-1.5 shrink-0 whitespace-nowrap">
+            <Button size="sm" className="h-8 gap-1.5 shrink-0 whitespace-nowrap" onClick={() => setIsCreateDialogOpen(true)}>
               <Plus className="h-4 w-4" />
               <span>New project</span>
             </Button>
@@ -197,6 +201,7 @@ export default function TeamProjectsPage({
       </main>
 
       <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
+      <CreateProjectDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} defaultTeamId={team.id} />
     </div>
   )
 }

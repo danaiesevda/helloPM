@@ -150,7 +150,7 @@ export default function ImportIssuesPage() {
                 })}
               </div>
 
-              {/* Linear to Linear Import */}
+              {/* PineApple to PineApple Import */}
               <div className="mt-4">
                 <button
                   onClick={() => {

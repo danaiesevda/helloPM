@@ -22,7 +22,7 @@ export default function DownloadPage() {
               </div>
               <h1 className="text-3xl font-semibold mb-2">Download Desktop App</h1>
               <p className="text-muted-foreground text-lg">
-                Get the full Linear experience with our native desktop app
+                Get the full PineApple experience with our native desktop app
               </p>
             </div>
 

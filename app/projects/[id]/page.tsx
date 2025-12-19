@@ -1,10 +1,11 @@
 "use client"
 
 import { use, useState } from "react"
+import Link from "next/link"
 import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
-import { mockProjects, mockIssues } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 import { ArrowLeft, MoreHorizontal, Plus } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { IssueCard } from "@/components/issue-card"
@@ -16,14 +17,29 @@ export default function ProjectDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
+  const { state } = useAppState()
   const [isCommandOpen, setIsCommandOpen] = useState(false)
-  const project = mockProjects.find((p) => p.id === id)
+  const project = state.projects.find((p) => p.id === id)
 
   if (!project) {
-    return <div>Project not found</div>
+    return (
+      <div className="flex h-screen bg-background">
+        <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
+        <main className="flex flex-1 items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-semibold mb-2">Project not found</h1>
+            <p className="text-muted-foreground mb-4">This project doesn't exist or has been deleted.</p>
+            <Link href="/projects">
+              <Button>Back to Projects</Button>
+            </Link>
+          </div>
+        </main>
+        <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
+      </div>
+    )
   }
 
-  const projectIssues = mockIssues.filter((i) => i.projectId === project.id)
+  const projectIssues = state.issues.filter((i) => i.projectId === project.id)
   const groupedIssues = {
     todo: projectIssues.filter((i) => i.status === "todo"),
     "in-progress": projectIssues.filter((i) => i.status === "in-progress"),

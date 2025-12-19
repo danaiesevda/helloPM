@@ -24,7 +24,7 @@ import {
   ChevronRight,
   Users,
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -46,6 +46,7 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { useAppState } from "@/lib/store"
+import { CreateProjectDialog } from "@/components/create-project-dialog"
 
 interface SidebarProps {
   onSearchClick?: () => void
@@ -55,11 +56,23 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
   const pathname = usePathname()
   const { state, addUser } = useAppState()
   const teams = state.teams
-  const [selectedTeam, setSelectedTeam] = useState(teams[0]?.id || "")
+  const [selectedTeam, setSelectedTeam] = useState("")
   const [workspaceOpen, setWorkspaceOpen] = useState(true)
   const [teamOpen, setTeamOpen] = useState(true)
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
+  const [isCreateProjectDialogOpen, setIsCreateProjectDialogOpen] = useState(false)
   const [inviteEmails, setInviteEmails] = useState("")
+
+  // Sync selectedTeam with current URL
+  useEffect(() => {
+    const teamMatch = pathname.match(/^\/team\/([^/]+)/)
+    if (teamMatch) {
+      const teamId = teamMatch[1]
+      if (teams.some(t => t.id === teamId)) {
+        setSelectedTeam(teamId)
+      }
+    }
+  }, [pathname, teams])
 
   const handleSendInvites = () => {
     if (!inviteEmails.trim()) return
@@ -180,11 +193,9 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
                 <span>Create new issue</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/projects/new" className="flex items-center w-full">
-                <Plus className="mr-2 h-4 w-4" />
-                <span>Create new project</span>
-              </Link>
+            <DropdownMenuItem onClick={() => setIsCreateProjectDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              <span>Create new project</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -422,6 +433,9 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Create Project Dialog */}
+      <CreateProjectDialog open={isCreateProjectDialogOpen} onOpenChange={setIsCreateProjectDialogOpen} />
     </aside>
   )
 }

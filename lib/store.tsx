@@ -52,7 +52,7 @@ const STORAGE_KEY = "hellopm-app-state"
 
 const defaultWorkspace: WorkspaceSettings = {
   name: "PineApple",
-  url: "pineapple.linear.app",
+  url: "pineapple.app",
   notifications: true,
 }
 

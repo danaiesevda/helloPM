@@ -3,16 +3,71 @@
 import { useState } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
+import { CreateProjectDialog } from "@/components/create-project-dialog"
+import { EditProjectDialog } from "@/components/edit-project-dialog"
 import { Button } from "@/components/ui/button"
-import { mockProjects, mockIssues } from "@/lib/mock-data"
-import { Filter, Plus, LayoutGrid, List, Search } from "lucide-react"
+import { useAppState } from "@/lib/store"
+import { type Project } from "@/lib/mock-data"
+import { Filter, Plus, LayoutGrid, List, Search, MoreHorizontal, Trash2, Edit2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 export default function ProjectsPage() {
+  const { state, deleteProject } = useAppState()
+  const projects = state.projects
+  const issues = state.issues
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "planned" | "completed">("all")
   const [isCommandOpen, setIsCommandOpen] = useState(false)
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [projectToEdit, setProjectToEdit] = useState<Project | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null)
+
+  const filteredProjects = statusFilter === "all" 
+    ? projects 
+    : projects.filter(p => p.status === statusFilter)
+
+  const handleEditClick = (e: React.MouseEvent, project: Project) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setProjectToEdit(project)
+    setIsEditDialogOpen(true)
+  }
+
+  const handleDeleteClick = (e: React.MouseEvent, projectId: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setProjectToDelete(projectId)
+    setDeleteDialogOpen(true)
+  }
+
+  const confirmDelete = () => {
+    if (projectToDelete) {
+      deleteProject(projectToDelete)
+      setProjectToDelete(null)
+    }
+    setDeleteDialogOpen(false)
+  }
 
   return (
     <div className="flex h-screen bg-background">
@@ -22,13 +77,36 @@ export default function ProjectsPage() {
         <header className="flex items-center justify-between border-b border-border px-4 py-3 gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <h1 className="text-xl font-semibold shrink-0">Projects</h1>
-            <Button variant="ghost" size="sm" className="h-7 text-sm shrink-0 whitespace-nowrap">
+            <Button 
+              variant={statusFilter === "all" ? "secondary" : "ghost"} 
+              size="sm" 
+              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              onClick={() => setStatusFilter("all")}
+            >
+              All
+            </Button>
+            <Button 
+              variant={statusFilter === "active" ? "secondary" : "ghost"} 
+              size="sm" 
+              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              onClick={() => setStatusFilter("active")}
+            >
               Active
             </Button>
-            <Button variant="ghost" size="sm" className="h-7 text-sm shrink-0 whitespace-nowrap">
+            <Button 
+              variant={statusFilter === "planned" ? "secondary" : "ghost"} 
+              size="sm" 
+              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              onClick={() => setStatusFilter("planned")}
+            >
               Planned
             </Button>
-            <Button variant="ghost" size="sm" className="h-7 text-sm shrink-0 whitespace-nowrap">
+            <Button 
+              variant={statusFilter === "completed" ? "secondary" : "ghost"} 
+              size="sm" 
+              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              onClick={() => setStatusFilter("completed")}
+            >
               Completed
             </Button>
           </div>
@@ -59,7 +137,7 @@ export default function ProjectsPage() {
                 <List className="h-3.5 w-3.5" />
               </Button>
             </div>
-            <Button size="sm" className="h-8 gap-1.5 shrink-0 whitespace-nowrap">
+            <Button size="sm" className="h-8 gap-1.5 shrink-0 whitespace-nowrap" onClick={() => setIsCreateDialogOpen(true)}>
               <Plus className="h-4 w-4" />
               <span>New project</span>
             </Button>
@@ -69,17 +147,18 @@ export default function ProjectsPage() {
         <div className="flex-1 overflow-y-auto p-6">
           {viewMode === "grid" ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {mockProjects.map((project) => {
-                const projectIssues = mockIssues.filter((i) => i.projectId === project.id)
+              {filteredProjects.map((project) => {
+                const projectIssues = issues.filter((i) => i.projectId === project.id)
                 const completedIssues = projectIssues.filter((i) => i.status === "done").length
 
                 return (
-                  <Link
+                  <div
                     key={project.id}
-                    href={`/projects/${project.id}`}
-                    className="group rounded-lg border border-border bg-card p-5 transition-all hover:border-primary/50 hover:shadow-md"
+                    className="group relative flex flex-col rounded-lg border border-border bg-card p-5 transition-all hover:border-primary/50 hover:shadow-md"
                   >
-                    <div className="mb-4 flex items-start justify-between">
+                    <Link href={`/projects/${project.id}`} className="absolute inset-0 z-0" />
+                    
+                    <div className="relative z-10 mb-4 flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <div
                           className="flex h-10 w-10 items-center justify-center rounded-lg text-2xl"
@@ -92,11 +171,41 @@ export default function ProjectsPage() {
                           <p className="text-sm text-muted-foreground">{projectIssues.length} issues</p>
                         </div>
                       </div>
+                      
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 opacity-0 group-hover:opacity-100"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenuItem onClick={(e) => handleEditClick(e, project)}>
+                            <Edit2 className="mr-2 h-4 w-4" />
+                            Edit project
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            onClick={(e) => handleDeleteClick(e, project.id)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete project
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
 
-                    <p className="mb-4 text-sm text-muted-foreground line-clamp-2">{project.description}</p>
+                    {/* Fixed height description area to keep progress bar aligned */}
+                    <div className="relative z-10 mb-4 h-10 flex items-start">
+                      <p className="text-sm text-muted-foreground line-clamp-2">{project.description || " "}</p>
+                    </div>
 
-                    <div className="space-y-2">
+                    <div className="relative z-10 space-y-2">
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span>Progress</span>
                         <span>
@@ -106,7 +215,7 @@ export default function ProjectsPage() {
                       <Progress value={project.progress} className="h-1.5" />
                     </div>
 
-                    <div className="mt-4 flex items-center gap-2">
+                    <div className="relative z-10 mt-4 flex items-center gap-2">
                       <span
                         className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
                         style={{
@@ -117,30 +226,31 @@ export default function ProjectsPage() {
                         {project.status}
                       </span>
                     </div>
-                  </Link>
+                  </div>
                 )
               })}
             </div>
           ) : (
             <div className="space-y-2">
-              {mockProjects.map((project) => {
-                const projectIssues = mockIssues.filter((i) => i.projectId === project.id)
+              {filteredProjects.map((project) => {
+                const projectIssues = issues.filter((i) => i.projectId === project.id)
                 const completedIssues = projectIssues.filter((i) => i.status === "done").length
 
                 return (
-                  <Link
+                  <div
                     key={project.id}
-                    href={`/projects/${project.id}`}
-                    className="group flex items-center gap-4 rounded-lg border border-border bg-card p-4 transition-all hover:border-primary/50 hover:shadow-sm"
+                    className="group relative flex items-center gap-4 rounded-lg border border-border bg-card p-4 transition-all hover:border-primary/50 hover:shadow-sm"
                   >
+                    <Link href={`/projects/${project.id}`} className="absolute inset-0 z-0" />
+                    
                     <div
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-2xl"
+                      className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-2xl"
                       style={{ backgroundColor: `${project.color}20` }}
                     >
                       {project.icon}
                     </div>
 
-                    <div className="flex-1">
+                    <div className="relative z-10 flex-1">
                       <div className="mb-1 flex items-center gap-3">
                         <h3 className="font-semibold text-foreground group-hover:text-primary">{project.name}</h3>
                         <span
@@ -156,7 +266,7 @@ export default function ProjectsPage() {
                       <p className="text-sm text-muted-foreground">{project.description}</p>
                     </div>
 
-                    <div className="flex shrink-0 items-center gap-6">
+                    <div className="relative z-10 flex shrink-0 items-center gap-6">
                       <div className="text-center">
                         <p className="text-xs text-muted-foreground">Issues</p>
                         <p className="text-lg font-semibold">{projectIssues.length}</p>
@@ -168,8 +278,35 @@ export default function ProjectsPage() {
                         </div>
                         <Progress value={project.progress} className="h-1.5" />
                       </div>
+                      
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 opacity-0 group-hover:opacity-100"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenuItem onClick={(e) => handleEditClick(e, project)}>
+                            <Edit2 className="mr-2 h-4 w-4" />
+                            Edit project
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            onClick={(e) => handleDeleteClick(e, project.id)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete project
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
-                  </Link>
+                  </div>
                 )
               })}
             </div>
@@ -178,6 +315,26 @@ export default function ProjectsPage() {
       </main>
 
       <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
+      <CreateProjectDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} />
+      <EditProjectDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} project={projectToEdit} />
+      
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete project?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the project and remove all associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

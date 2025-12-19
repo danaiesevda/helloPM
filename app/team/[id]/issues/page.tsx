@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
-import { mockTeams, type Issue } from "@/lib/mock-data"
+import { type Issue } from "@/lib/mock-data"
 import { useAppState } from "@/lib/store"
 import { Filter } from "lucide-react"
 import { IssueListView } from "@/components/issue-list-view"
@@ -22,8 +22,9 @@ export default function TeamIssuesPage({
   const { id } = use(params)
   const { state, updateIssue, addIssue, deleteIssues } = useAppState()
   const issues = state.issues
+  const teams = state.teams
   
-  const team = mockTeams.find((t) => t.id === id)
+  const team = teams.find((t) => t.id === id)
   const [currentView, setCurrentView] = useState<ViewType>("list")
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
