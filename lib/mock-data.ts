@@ -4,7 +4,7 @@ export interface User {
   id: string
   name: string
   email: string
-  avatar: string
+  avatar: string | null
   role: "admin" | "member" | "viewer"
   teamIds: string[]
 }
@@ -14,6 +14,7 @@ export interface Team {
   name: string
   icon: string
   key: string
+  identifier?: string
   memberCount: number
 }
 
@@ -32,9 +33,10 @@ export interface Project {
   teamId: string
   status: "active" | "planned" | "completed"
   progress: number
-  startDate: string
-  endDate: string
-  lead: string
+  startDate: string | null
+  endDate: string | null
+  lead: string | null
+  issueCount?: number
 }
 
 export interface Issue {

@@ -57,11 +57,12 @@ export function IssueBoardView({
     onDeleteIssues?.(issueIds)
   }
 
-  const groupedIssues = {
+  const groupedIssues: Record<Issue["status"], Issue[]> = {
     backlog: issues.filter((i) => i.status === "backlog"),
     todo: issues.filter((i) => i.status === "todo"),
     "in-progress": issues.filter((i) => i.status === "in-progress"),
     done: issues.filter((i) => i.status === "done"),
+    canceled: issues.filter((i) => i.status === "canceled"),
   }
 
   const columns: Array<{
@@ -204,7 +205,7 @@ export function IssueBoardView({
                   Drop issues here
                 </div>
               )}
-              {columnIssues.map((issue) => {
+              {columnIssues.map((issue: Issue) => {
                 const assignee = mockUsers.find((u) => u.id === issue.assigneeId)
                 const isDragging = draggedIssue?.id === issue.id
 
@@ -316,7 +317,7 @@ export function IssueBoardView({
                       <div className="flex items-center gap-2">
                         {issue.labels.length > 0 && (
                           <div className="flex gap-1">
-                            {issue.labels.map((labelId) => {
+                            {issue.labels.map((labelId: string) => {
                               const label = availableLabels.find((l) => l.id === labelId)
                               if (!label) return null
                               return (

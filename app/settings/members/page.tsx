@@ -45,7 +45,7 @@ export default function MembersSettingsPage() {
       id: String(members.length + 1),
       name: inviteEmail.split("@")[0],
       email: inviteEmail.trim(),
-      role: inviteRole.toLowerCase() as "admin" | "member" | "guest",
+      role: inviteRole.toLowerCase() as "admin" | "member" | "viewer",
       avatar: null,
       teamIds: [],
     }
@@ -61,7 +61,7 @@ export default function MembersSettingsPage() {
   }
 
   const handleChangeRole = (memberId: string, newRole: string) => {
-    updateUser(memberId, { role: newRole.toLowerCase() as "admin" | "member" | "guest" })
+    updateUser(memberId, { role: newRole.toLowerCase() as "admin" | "member" | "viewer" })
   }
 
   return (

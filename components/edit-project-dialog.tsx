@@ -71,7 +71,7 @@ export function EditProjectDialog({ open, onOpenChange, project }: EditProjectDi
       color,
       teamId,
       status,
-      lead: lead || null,
+      lead: lead || undefined,
     })
     onOpenChange(false)
   }
