@@ -125,7 +125,15 @@ export default function MyIssuesPage() {
   const handleIssueUpdate = (issueId: string, updates: Partial<Issue>) => {
     updateIssue(issueId, updates)
     if (selectedIssue?.id === issueId) {
-      setSelectedIssue({ ...selectedIssue, ...updates })
+      const updatedIssue = { ...selectedIssue, ...updates }
+      setSelectedIssue(updatedIssue)
+      
+      // If assignee changed and we're on "assigned" tab, switch to "created" tab if user created this issue
+      if (updates.assigneeId !== undefined && activeTab === "assigned") {
+        if (selectedIssue && selectedIssue.createdBy === currentUserId && updates.assigneeId !== currentUserId) {
+          setActiveTab("created")
+        }
+      }
     }
   }
 

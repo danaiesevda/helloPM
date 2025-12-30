@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { type Issue, mockUsers, mockProjects } from "@/lib/mock-data"
+import { type Issue } from "@/lib/mock-data"
 import { useAppState } from "@/lib/store"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -47,6 +47,8 @@ interface IssueDetailModalProps {
 export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: IssueDetailModalProps) {
   const { state } = useAppState()
   const availableLabels = state.labels
+  const users = state.users
+  const projects = state.projects
   
   const [title, setTitle] = useState(issue?.title || "")
   const [description, setDescription] = useState(issue?.description || "")
@@ -78,8 +80,8 @@ export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: I
 
   if (!issue) return null
 
-  const assignee = mockUsers.find((u) => u.id === assigneeId)
-  const project = mockProjects.find((p) => p.id === projectId)
+  const assignee = users.find((u) => u.id === assigneeId)
+  const project = projects.find((p) => p.id === projectId)
 
   const getPriorityIcon = (priority: Issue["priority"]) => {
     const colors = {
@@ -298,7 +300,7 @@ export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: I
                     </SelectTrigger>
                     <SelectContent side="left" align="start" sideOffset={4}>
                       <SelectItem value="unassigned">Unassigned</SelectItem>
-                      {mockUsers.map((user) => (
+                      {users.map((user) => (
                         <SelectItem key={user.id} value={user.id}>
                           <div className="flex items-center gap-2">
                             <Avatar className="h-5 w-5">
@@ -401,7 +403,7 @@ export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: I
                       <SelectItem value="no-project">
                         <span className="text-muted-foreground">No project</span>
                       </SelectItem>
-                      {mockProjects.map((proj) => (
+                      {projects.map((proj) => (
                         <SelectItem key={proj.id} value={proj.id}>
                           <div className="flex items-center gap-2">
                             <span>{proj.icon}</span>

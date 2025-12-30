@@ -93,7 +93,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               {filteredIssues.slice(0, 5).map((issue) => (
                 <CommandItem
                   key={issue.id}
-                  onSelect={() => handleSelect(() => console.log("Open issue:", issue.id))}
+                  onSelect={() => handleSelect(() => {})}
                   value={`${issue.identifier} ${issue.title}`}
                 >
                   <FileText className="mr-2 h-4 w-4" />
@@ -158,7 +158,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             {filteredUsers.map((user) => (
               <CommandItem
                 key={user.id}
-                onSelect={() => handleSelect(() => console.log("View user:", user.id))}
+                onSelect={() => handleSelect(() => {})}
                 value={user.name}
               >
                 <Avatar className="mr-2 h-4 w-4">

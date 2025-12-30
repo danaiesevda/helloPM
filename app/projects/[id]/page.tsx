@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useState } from "react"
+import { use, useState, useMemo } from "react"
 import Link from "next/link"
 import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
@@ -39,12 +39,15 @@ export default function ProjectDetailPage({
     )
   }
 
-  const projectIssues = state.issues.filter((i) => i.projectId === project.id)
-  const groupedIssues = {
+  const projectIssues = useMemo(() => 
+    state.issues.filter((i) => i.projectId === project.id), 
+    [state.issues, project.id]
+  )
+  const groupedIssues = useMemo(() => ({
     todo: projectIssues.filter((i) => i.status === "todo"),
     "in-progress": projectIssues.filter((i) => i.status === "in-progress"),
     done: projectIssues.filter((i) => i.status === "done"),
-  }
+  }), [projectIssues])
 
   return (
     <div className="flex h-screen bg-background">

@@ -14,7 +14,6 @@ export default function LogoutPage() {
 
   const handleLogout = () => {
     // In a real app, this would clear authentication tokens, etc.
-    console.log("Logging out...")
     // Redirect to home or login page
     router.push("/")
   }

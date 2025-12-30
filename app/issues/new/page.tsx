@@ -42,18 +42,6 @@ export default function CreateIssuePage() {
     if (!title.trim()) return
 
     // In a real app, this would make an API call
-    console.log("Creating issue:", {
-      title,
-      description,
-      status,
-      priority,
-      assigneeId: assigneeId || null,
-      projectId: projectId || null,
-      teamId,
-      labels: selectedLabels,
-      dueDate: dueDate || null,
-      estimate: estimate ? parseInt(estimate) : null,
-    })
 
     // Navigate back or to the new issue
     router.push("/")

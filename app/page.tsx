@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { IssueListView } from "@/components/issue-list-view"
 import { IssueBoardView } from "@/components/issue-board-view"
@@ -50,7 +50,8 @@ export default function Home() {
     updateIssue(issueId, { status: newStatus })
     // Update selected issue if it's the one being changed
     if (selectedIssue?.id === issueId) {
-      setSelectedIssue({ ...selectedIssue, status: newStatus })
+      const updatedIssue = { ...selectedIssue, status: newStatus }
+      setSelectedIssue(updatedIssue)
     }
   }
 
@@ -82,7 +83,8 @@ export default function Home() {
     updateIssue(issueId, updates)
     // Update selected issue if it's the one being changed
     if (selectedIssue?.id === issueId) {
-      setSelectedIssue({ ...selectedIssue, ...updates })
+      const updatedIssue = { ...selectedIssue, ...updates }
+      setSelectedIssue(updatedIssue)
     }
   }
 
@@ -118,22 +120,24 @@ export default function Home() {
     setIsModalOpen(true)
   }
 
-  // Apply filters to issues
-  const filteredIssues = issues.filter((issue) => {
-    if (filters.status.length > 0 && !filters.status.includes(issue.status)) {
-      return false
-    }
-    if (filters.priority.length > 0 && !filters.priority.includes(issue.priority)) {
-      return false
-    }
-    if (filters.assignee.length > 0 && issue.assigneeId && !filters.assignee.includes(issue.assigneeId)) {
-      return false
-    }
-    if (filters.project.length > 0 && issue.projectId && !filters.project.includes(issue.projectId)) {
-      return false
-    }
-    return true
-  })
+  // Apply filters to issues - use useMemo to react to state changes
+  const filteredIssues = useMemo(() => {
+    return issues.filter((issue) => {
+      if (filters.status.length > 0 && !filters.status.includes(issue.status)) {
+        return false
+      }
+      if (filters.priority.length > 0 && !filters.priority.includes(issue.priority)) {
+        return false
+      }
+      if (filters.assignee.length > 0 && issue.assigneeId && !filters.assignee.includes(issue.assigneeId)) {
+        return false
+      }
+      if (filters.project.length > 0 && issue.projectId && !filters.project.includes(issue.projectId)) {
+        return false
+      }
+      return true
+    })
+  }, [issues, filters])
 
   return (
     <div className="flex h-screen bg-background">

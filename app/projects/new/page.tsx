@@ -56,17 +56,6 @@ export default function CreateProjectPage() {
     if (!name.trim()) return
 
     // In a real app, this would make an API call
-    console.log("Creating project:", {
-      name,
-      description,
-      icon,
-      color,
-      teamId,
-      status,
-      lead: lead || null,
-      startDate: startDate || null,
-      endDate: endDate || null,
-    })
 
     // Navigate back or to the new project
     router.push("/projects")

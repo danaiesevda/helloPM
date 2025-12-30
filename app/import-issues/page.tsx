@@ -90,7 +90,6 @@ export default function ImportIssuesPage() {
 
   const handleImport = () => {
     // Simulate import
-    console.log(`Importing from ${selectedService} with URL: ${importUrl}`)
     setIsImportDialogOpen(false)
     setImportUrl("")
     setSelectedService(null)
@@ -387,6 +386,7 @@ export default function ImportIssuesPage() {
     </div>
   )
 }
+
 
 
 

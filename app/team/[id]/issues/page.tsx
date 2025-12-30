@@ -44,7 +44,8 @@ export default function TeamIssuesPage({
   const handleIssueStatusChange = (issueId: string, newStatus: Issue["status"]) => {
     updateIssue(issueId, { status: newStatus })
     if (selectedIssue?.id === issueId) {
-      setSelectedIssue({ ...selectedIssue, status: newStatus })
+      const updatedIssue = { ...selectedIssue, status: newStatus }
+      setSelectedIssue(updatedIssue)
     }
   }
 
@@ -100,7 +101,8 @@ export default function TeamIssuesPage({
   const handleIssueUpdate = (issueId: string, updates: Partial<Issue>) => {
     updateIssue(issueId, updates)
     if (selectedIssue?.id === issueId) {
-      setSelectedIssue({ ...selectedIssue, ...updates })
+      const updatedIssue = { ...selectedIssue, ...updates }
+      setSelectedIssue(updatedIssue)
     }
   }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { CommandPalette } from "@/components/command-palette"
 import { Button } from "@/components/ui/button"
@@ -119,9 +119,12 @@ export default function InboxPage() {
   const unreadCount = notifications.filter(n => !n.read).length
 
   const selectedNotification = notifications.find(n => n.id === selectedNotificationId)
-  const selectedIssue = selectedNotification 
-    ? issues.find(i => i.id === selectedNotification.issueId)
-    : null
+  const selectedIssue = useMemo(() => 
+    selectedNotification 
+      ? issues.find(i => i.id === selectedNotification.issueId)
+      : null,
+    [selectedNotification, issues]
+  )
   const selectedActor = selectedNotification
     ? users.find(u => u.id === selectedNotification.actorId)
     : null
