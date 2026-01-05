@@ -19,7 +19,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Plus, Bell, ChevronDown, Search } from "lucide-react"
+import { Plus, Bell, ChevronDown } from "lucide-react"
 import { WelcomeModal } from "@/components/welcome-modal"
 import { NotificationDropdown } from "@/components/notification-dropdown"
 
@@ -168,13 +168,6 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <Button variant="ghost" size="sm" className="h-7 gap-2 text-sm shrink-0" onClick={() => setIsWelcomeOpen(true)}>
-              <Search className="h-4 w-4 shrink-0" />
-              <span className="text-muted-foreground whitespace-nowrap">Search</span>
-              <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-xs font-medium opacity-100 sm:flex shrink-0">
-                <span className="text-xs">⌘</span>K
-              </kbd>
-            </Button>
             <NotificationDropdown />
             <ViewSwitcher currentView={currentView} onViewChange={setCurrentView} />
           </div>
