@@ -12,17 +12,29 @@ import { ViewSwitcher, type ViewType } from "@/components/view-switcher"
 import { type Issue } from "@/lib/mock-data"
 import { useAppState } from "@/lib/store"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Plus, Bell, ChevronDown, Search } from "lucide-react"
+import { WelcomeModal } from "@/components/welcome-modal"
+import { NotificationDropdown } from "@/components/notification-dropdown"
 
 export default function Home() {
   const { state, updateIssue, addIssue, deleteIssues } = useAppState()
   const issues = state.issues
+  const users = state.users
+  const projects = state.projects
   
   const [currentView, setCurrentView] = useState<ViewType>("list")
   const [draggedIssue, setDraggedIssue] = useState<Issue | null>(null)
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCommandOpen, setIsCommandOpen] = useState(false)
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState(false)
   const [filters, setFilters] = useState<{
     status: string[]
     priority: string[]
@@ -144,12 +156,9 @@ export default function Home() {
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex items-center justify-between border-b border-border px-4 py-2 gap-4">
-          <div className="flex items-center gap-2 min-w-0">
-            <Button variant="ghost" size="sm" className="h-7 gap-1 text-sm shrink-0">
-              <span className="whitespace-nowrap">All issues</span>
-              <ChevronDown className="h-3 w-3 shrink-0" />
-            </Button>
+        <header className="flex items-center justify-between border-b border-border px-4 py-3 gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <h1 className="text-xl font-semibold shrink-0">All Issues</h1>
             <Button variant="ghost" size="sm" className="h-7 text-sm shrink-0 whitespace-nowrap">
               Active
             </Button>
@@ -159,16 +168,14 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <Button variant="ghost" size="sm" className="h-7 gap-2 text-sm shrink-0" onClick={() => setIsCommandOpen(true)}>
+            <Button variant="ghost" size="sm" className="h-7 gap-2 text-sm shrink-0" onClick={() => setIsWelcomeOpen(true)}>
               <Search className="h-4 w-4 shrink-0" />
               <span className="text-muted-foreground whitespace-nowrap">Search</span>
               <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-xs font-medium opacity-100 sm:flex shrink-0">
                 <span className="text-xs">⌘</span>K
               </kbd>
             </Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0">
-              <Bell className="h-4 w-4" />
-            </Button>
+            <NotificationDropdown />
             <ViewSwitcher currentView={currentView} onViewChange={setCurrentView} />
           </div>
         </header>
@@ -176,18 +183,90 @@ export default function Home() {
         <div className="flex items-center justify-between border-b border-border px-4 py-2">
           <div className="flex items-center gap-2">
             <FilterDropdown filters={filters} onFiltersChange={setFilters} />
-            <Button variant="ghost" size="sm" className="h-7 gap-1 text-sm">
-              <span>Status</span>
-              <ChevronDown className="h-3 w-3" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-7 gap-1 text-sm">
-              <span>Priority</span>
-              <ChevronDown className="h-3 w-3" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-7 gap-1 text-sm">
-              <span>Assignee</span>
-              <ChevronDown className="h-3 w-3" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-7 gap-1 text-sm">
+                  <span>Status</span>
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+                {["backlog", "todo", "in-progress", "done", "canceled"].map((status) => (
+                  <DropdownMenuCheckboxItem
+                    key={status}
+                    checked={filters.status.includes(status)}
+                    onCheckedChange={(checked) => {
+                      const newFilters = { ...filters }
+                      if (checked) {
+                        newFilters.status = [...newFilters.status, status]
+                      } else {
+                        newFilters.status = newFilters.status.filter((s) => s !== status)
+                      }
+                      setFilters(newFilters)
+                    }}
+                  >
+                    <span className="capitalize">{status.replace("-", " ")}</span>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-7 gap-1 text-sm">
+                  <span>Priority</span>
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuLabel>Filter by Priority</DropdownMenuLabel>
+                {["urgent", "high", "medium", "low", "none"].map((priority) => (
+                  <DropdownMenuCheckboxItem
+                    key={priority}
+                    checked={filters.priority.includes(priority)}
+                    onCheckedChange={(checked) => {
+                      const newFilters = { ...filters }
+                      if (checked) {
+                        newFilters.priority = [...newFilters.priority, priority]
+                      } else {
+                        newFilters.priority = newFilters.priority.filter((p) => p !== priority)
+                      }
+                      setFilters(newFilters)
+                    }}
+                  >
+                    <span className="capitalize">{priority}</span>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-7 gap-1 text-sm">
+                  <span>Assignee</span>
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuLabel>Filter by Assignee</DropdownMenuLabel>
+                {users.map((user) => (
+                  <DropdownMenuCheckboxItem
+                    key={user.id}
+                    checked={filters.assignee.includes(user.id)}
+                    onCheckedChange={(checked) => {
+                      const newFilters = { ...filters }
+                      if (checked) {
+                        newFilters.assignee = [...newFilters.assignee, user.id]
+                      } else {
+                        newFilters.assignee = newFilters.assignee.filter((id) => id !== user.id)
+                      }
+                      setFilters(newFilters)
+                    }}
+                  >
+                    {user.name}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <Button size="sm" className="h-7 gap-1 text-sm" onClick={() => handleCreateIssue("todo")}>
@@ -241,6 +320,7 @@ export default function Home() {
       />
 
       <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
+      <WelcomeModal open={isWelcomeOpen} onOpenChange={setIsWelcomeOpen} />
     </div>
   )
 }

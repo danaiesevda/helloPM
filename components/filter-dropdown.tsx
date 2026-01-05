@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Filter } from "lucide-react"
-import { mockUsers, mockProjects } from "@/lib/mock-data"
+import { useAppState } from "@/lib/store"
 
 interface FilterState {
   status: string[]
@@ -27,6 +27,9 @@ interface FilterDropdownProps {
 
 export function FilterDropdown({ filters, onFiltersChange }: FilterDropdownProps) {
   const [localFilters, setLocalFilters] = useState(filters)
+  const { state } = useAppState()
+  const users = state.users
+  const projects = state.projects
 
   const statuses = ["backlog", "todo", "in-progress", "done", "canceled"]
   const priorities = ["urgent", "high", "medium", "low", "none"]
@@ -84,7 +87,7 @@ export function FilterDropdown({ filters, onFiltersChange }: FilterDropdownProps
         <DropdownMenuSeparator />
 
         <DropdownMenuLabel>Assignee</DropdownMenuLabel>
-        {mockUsers.map((user) => (
+        {users.map((user) => (
           <DropdownMenuCheckboxItem
             key={user.id}
             checked={localFilters.assignee.includes(user.id)}
@@ -97,7 +100,7 @@ export function FilterDropdown({ filters, onFiltersChange }: FilterDropdownProps
         <DropdownMenuSeparator />
 
         <DropdownMenuLabel>Project</DropdownMenuLabel>
-        {mockProjects.map((project) => (
+        {projects.map((project) => (
           <DropdownMenuCheckboxItem
             key={project.id}
             checked={localFilters.project.includes(project.id)}

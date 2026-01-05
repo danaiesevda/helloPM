@@ -6,6 +6,7 @@ import {
   ChevronDown,
   Inbox,
   ListTodo,
+  FileText,
   FolderKanban,
   LayoutGrid,
   UserPlus,
@@ -205,6 +206,16 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
       <nav className="flex-1 overflow-y-auto px-2 py-2">
         {/* Personal Section */}
         <div className="mb-4 space-y-0.5">
+          <Link
+            href="/"
+            className={cn(
+              "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent",
+              pathname === "/" && "bg-sidebar-accent text-sidebar-foreground"
+            )}
+          >
+            <FileText className="h-4 w-4" />
+            <span>All Issues</span>
+          </Link>
           <Link
             href="/inbox"
             className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent"
