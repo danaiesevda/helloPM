@@ -19,12 +19,9 @@ export function WelcomeModal({ open: controlledOpen, onOpenChange }: WelcomeModa
   const setIsOpen = onOpenChange || setInternalOpen
 
   useEffect(() => {
-    // Only auto-open if not controlled from outside
+    // Always auto-open if not controlled from outside
     if (controlledOpen === undefined) {
-      const hasSeen = localStorage.getItem(STORAGE_KEY)
-      if (!hasSeen) {
-        setTimeout(() => setInternalOpen(true), 300)
-      }
+      setTimeout(() => setInternalOpen(true), 300)
     }
   }, [controlledOpen])
 
