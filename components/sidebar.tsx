@@ -169,37 +169,39 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
-          onClick={onSearchClick}
-        >
-          <Search className="h-4 w-4" />
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
-            >
-              <PenSquare className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem asChild>
-              <Link href="/issues/new" className="flex items-center w-full">
+        <div className="flex items-center gap-0.5">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
+            onClick={onSearchClick}
+          >
+            <Search className="h-4 w-4" />
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
+              >
+                <PenSquare className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem asChild>
+                <Link href="/issues/new" className="flex items-center w-full">
+                  <Plus className="mr-2 h-4 w-4" />
+                  <span>Create new issue</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsCreateProjectDialogOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
-                <span>Create new issue</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setIsCreateProjectDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              <span>Create new project</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                <span>Create new project</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Navigation */}

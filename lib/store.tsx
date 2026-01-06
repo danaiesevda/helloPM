@@ -51,7 +51,7 @@ const AppContext = createContext<AppContextType | null>(null)
 const STORAGE_KEY = "hellopm-app-state"
 
 const defaultWorkspace: WorkspaceSettings = {
-  name: "PineApple",
+  name: "Pine Apple",
   url: "pineapple.app",
   notifications: true,
 }
@@ -78,13 +78,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
         const parsed = JSON.parse(stored)
+        // Migrate workspace name from "Ferrero Rocher" or variants to "Pine Apple"
+        let workspace = parsed.workspace || defaultWorkspace
+        if (workspace.name && (workspace.name.includes("Ferrero") || workspace.name.includes("Ferro") || workspace.name.toLowerCase().includes("ferrero"))) {
+          workspace = { ...workspace, name: "Pine Apple" }
+        }
         setState({
           issues: parsed.issues || mockData.issues,
           projects: parsed.projects || mockData.projects,
           users: parsed.users || mockData.users,
           teams: parsed.teams || mockData.teams,
           labels: parsed.labels || mockData.labels,
-          workspace: parsed.workspace || defaultWorkspace,
+          workspace: workspace,
         })
       }
     } catch (e) {
@@ -275,6 +280,9 @@ export function useAppState() {
   }
   return context
 }
+
+
+
 
 
 

@@ -20,7 +20,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Plus, Bell, ChevronDown } from "lucide-react"
-import { WelcomeModal } from "@/components/welcome-modal"
 import { NotificationDropdown } from "@/components/notification-dropdown"
 
 export default function Home() {
@@ -34,7 +33,6 @@ export default function Home() {
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCommandOpen, setIsCommandOpen] = useState(false)
-  const [isWelcomeOpen, setIsWelcomeOpen] = useState(false)
   const [filters, setFilters] = useState<{
     status: string[]
     priority: string[]
@@ -313,7 +311,6 @@ export default function Home() {
       />
 
       <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
-      <WelcomeModal open={isWelcomeOpen} onOpenChange={setIsWelcomeOpen} />
     </div>
   )
 }

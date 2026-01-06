@@ -13,13 +13,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { ArrowLeft, Plus, Users, MoreHorizontal, UserPlus, Settings as SettingsIcon } from "lucide-react"
+import { ArrowLeft, Plus, Users, MoreHorizontal, UserPlus, Settings as SettingsIcon, Trash2 } from "lucide-react"
 import { mockUsers } from "@/lib/mock-data"
 import { useAppState } from "@/lib/store"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -32,6 +33,7 @@ export default function TeamsSettingsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isAddMembersDialogOpen, setIsAddMembersDialogOpen] = useState<string | null>(null)
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState<string | null>(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<string | null>(null)
   const [newTeamName, setNewTeamName] = useState("")
   const [newTeamKey, setNewTeamKey] = useState("")
   const [newTeamIcon, setNewTeamIcon] = useState(teamIcons[0])
@@ -91,6 +93,7 @@ export default function TeamsSettingsPage() {
 
   const handleDeleteTeam = (teamId: string) => {
     deleteTeam(teamId)
+    setIsDeleteDialogOpen(null)
   }
 
   return (
@@ -257,6 +260,14 @@ export default function TeamsSettingsPage() {
                           <DropdownMenuItem onClick={() => handleOpenAddMembers(team.id)}>
                             <UserPlus className="mr-2 h-4 w-4" />
                             Add members
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            onClick={() => setIsDeleteDialogOpen(team.id)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete team
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -445,6 +456,38 @@ export default function TeamsSettingsPage() {
                       </Button>
                       <Button onClick={handleSaveSettings}>
                         Save changes
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
+
+              {/* Delete Team Confirmation Dialog */}
+              {isDeleteDialogOpen && (
+                <Dialog open={!!isDeleteDialogOpen} onOpenChange={(open) => !open && setIsDeleteDialogOpen(null)}>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Delete team</DialogTitle>
+                      <DialogDescription>
+                        Are you sure you want to delete this team? This action cannot be undone.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                      {teams.find(t => t.id === isDeleteDialogOpen) && (
+                        <p className="text-sm text-foreground">
+                          Team: <span className="font-semibold">{teams.find(t => t.id === isDeleteDialogOpen)?.name}</span>
+                        </p>
+                      )}
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setIsDeleteDialogOpen(null)}>
+                        Cancel
+                      </Button>
+                      <Button 
+                        variant="destructive" 
+                        onClick={() => handleDeleteTeam(isDeleteDialogOpen!)}
+                      >
+                        Delete team
                       </Button>
                     </DialogFooter>
                   </DialogContent>

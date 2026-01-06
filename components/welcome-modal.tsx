@@ -3,146 +3,118 @@
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Sparkles, Rocket, Code, Zap } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { Sparkles, Rocket, Zap, Code } from "lucide-react"
 
-const STORAGE_KEY = "hellopm-welcome-seen"
-
-interface WelcomeModalProps {
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
-}
-
-export function WelcomeModal({ open: controlledOpen, onOpenChange }: WelcomeModalProps) {
-  const [internalOpen, setInternalOpen] = useState(false)
-  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
-  const setIsOpen = onOpenChange || setInternalOpen
+export function WelcomeModal() {
+  const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // Always auto-open if not controlled from outside
-    if (controlledOpen === undefined) {
-      setTimeout(() => setInternalOpen(true), 300)
+    setMounted(true)
+    
+    // Wait for client-side only
+    if (typeof window === 'undefined') return
+    
+    // Always show welcome modal on every visit/refresh
+    const timer = setTimeout(() => {
+      setIsOpen(true)
+    }, 800)
+    
+    return () => {
+      clearTimeout(timer)
     }
-  }, [controlledOpen])
+  }, [])
 
-  const handlePlayAround = () => {
+  const handleClose = () => {
     setIsOpen(false)
-    localStorage.setItem(STORAGE_KEY, "true")
+  }
+
+  // Don't render until mounted to avoid hydration issues
+  if (!mounted) {
+    return null
   }
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <Dialog open={isOpen} onOpenChange={() => {}}>
-          <DialogContent className="max-w-2xl p-0 border-0 bg-transparent shadow-none overflow-visible" showCloseButton={false}>
-            <DialogTitle className="sr-only">Welcome to PineApple</DialogTitle>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8, y: 20 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="relative"
-            >
-              {/* Animated background gradient */}
-              <motion.div
-                className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-background blur-3xl -z-10"
-                animate={{
-                  background: [
-                    "radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.3) 0%, transparent 50%)",
-                    "radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.3) 0%, transparent 50%)",
-                    "radial-gradient(circle at 50% 20%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)",
-                    "radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.3) 0%, transparent 50%)",
-                  ],
-                }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              />
-
-              <div className="relative bg-card border border-border rounded-2xl p-8 md:p-12 shadow-2xl">
-                {/* Floating icons animation */}
-                <div className="absolute top-4 right-4 flex gap-2">
-                  <motion.div
-                    animate={{ rotate: [0, 360], y: [0, -10, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <Sparkles className="h-6 w-6 text-primary/60" />
-                  </motion.div>
-                  <motion.div
-                    animate={{ rotate: [360, 0], y: [0, 10, 0] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                  >
-                    <Rocket className="h-6 w-6 text-primary/60" />
-                  </motion.div>
-                </div>
-
-                <div className="absolute top-4 left-4 flex gap-2">
-                  <motion.div
-                    animate={{ rotate: [0, -360], y: [0, -8, 0] }}
-                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                  >
-                    <Code className="h-6 w-6 text-primary/60" />
-                  </motion.div>
-                  <motion.div
-                    animate={{ rotate: [360, 0], y: [0, 8, 0] }}
-                    transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-                  >
-                    <Zap className="h-6 w-6 text-primary/60" />
-                  </motion.div>
-                </div>
-
-                {/* Content */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2, duration: 0.5 }}
-                  className="text-center space-y-6"
-                >
-                  {/* Title */}
-                  <motion.h1
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
-                    className="text-3xl md:text-4xl font-bold text-foreground leading-tight"
-                  >
-                    A SaaS CRM I planned, managed, built, and shipped. No slides were harmed in the process :)
-                  </motion.h1>
-
-                  {/* Description */}
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
-                    className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
-                  >
-                    From discovery and roadmapping to execution and launch, I owned the full product journey. This project shows how I work as a PM: structured when needed, flexible when reality hits, and always focused on getting a real product live.
-                  </motion.p>
-
-                  {/* Button */}
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.5, duration: 0.5 }}
-                    className="pt-4"
-                  >
-                    <Button
-                      onClick={handlePlayAround}
-                      size="lg"
-                      className="px-8 py-6 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      <motion.span
-                        animate={{ x: [0, 5, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                        className="inline-block"
-                      >
-                        Play Around
-                      </motion.span>
-                    </Button>
-                  </motion.div>
-                </motion.div>
+    <Dialog open={isOpen} onOpenChange={handleClose} >
+      <DialogContent className="max-w-3xl p-0 border-0 bg-transparent shadow-none overflow-visible" showCloseButton={false}>
+        <DialogTitle className="sr-only">Welcome to Pine Apple - SaaS CRM Platform</DialogTitle>
+        <div className="relative z-50">
+          {/* Animated ambient light background - moves behind the modal */}
+          <div className="absolute inset-0 rounded-2xl animate-blue-gradient blur-lg -z-10 scale-100 opacity-25" />
+          
+          {/* Main content card */}
+          <div className="relative bg-background border border-border/50 rounded-2xl p-8 md:p-12 shadow-2xl animate-scale-in">
+            {/* Icons in corners with animations */}
+            {/* Top Left Icons */}
+            <div className="absolute top-6 left-6 flex flex-col gap-4">
+              <div className="animate-float-code">
+                <Code className="h-8 w-8" style={{ color: "#3A5DAD" }} />
               </div>
-            </motion.div>
-          </DialogContent>
-        </Dialog>
-      )}
-    </AnimatePresence>
+              <div className="animate-pulse-lightning">
+                <Zap className="h-8 w-8" style={{ color: "#3A5DAD" }} />
+              </div>
+            </div>
+
+            {/* Top Right Icons */}
+            <div className="absolute top-6 right-6 flex flex-col gap-4">
+              <div className="animate-rotate-sparkle">
+                <Sparkles className="h-8 w-8" style={{ color: "#3A5DAD" }} />
+              </div>
+              <div className="animate-float-rocket">
+                <Rocket className="h-8 w-8" style={{ color: "#3A5DAD" }} />
+              </div>
+            </div>
+
+            {/* Title */}
+            <div className="text-center mb-6 mt-20 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+              <h1 
+                className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent animate-gradient leading-tight"
+                style={{
+                  backgroundImage: "linear-gradient(90deg, #000000 0%, #3A5DAD 25%, #EFB100 50%, #3A5DAD 75%, #000000 100%)",
+                  backgroundSize: "200% 100%",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent"
+                }}
+              >
+                Pine Apple
+              </h1>
+              <h2 className="text-2xl md:text-3xl font-semibold text-black dark:text-white mt-2">
+                SaaS CRM Platform
+              </h2>
+            </div>
+
+            {/* Description */}
+            <div className="text-center mb-10 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
+              <p className="text-base md:text-lg text-black dark:text-white leading-relaxed max-w-2xl mx-auto" >
+                is a production-ready SaaS CRM designed, developed, and launched end to end, built to support real users, workflows, and scalable growth.
+              </p>
+            </div>
+
+            {/* CTA Button */}
+            <div className="text-center animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
+              <Button
+                onClick={handleClose}
+                size="lg"
+                className="group relative overflow-hidden px-8 py-6 text-base font-semibold rounded-lg text-white transition-all duration-300 animate-pulse-button !border-0 !ring-0 focus:!ring-0"
+                style={{ backgroundColor: "#3A5DAD", border: "none", outline: "none", boxShadow: "none" }}
+                onMouseEnter={(e) => { 
+                  e.currentTarget.style.backgroundColor = "#2d4a8a"; 
+                  e.currentTarget.style.border = "none";
+                  e.currentTarget.style.outline = "none"; e.currentTarget.style.boxShadow = "none";
+                  }}
+                onMouseLeave={(e) => { 
+                  e.currentTarget.style.backgroundColor = "#3A5DAD"; 
+                  e.currentTarget.style.border = "none";
+                  e.currentTarget.style.outline = "none"; e.currentTarget.style.boxShadow = "none";
+                  }}
+              >
+                <span className="relative z-10">Get Started</span>
+                <div className="absolute inset-0 animate-shimmer" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }

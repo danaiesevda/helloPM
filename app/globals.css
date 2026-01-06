@@ -125,3 +125,227 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Welcome Modal Animations */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+@keyframes purple-gradient-shift {
+  0% {
+    background-position: 0% 0%;
+    transform: scale(1);
+  }
+  25% {
+    background-position: 100% 50%;
+    transform: scale(1.1);
+  }
+  50% {
+    background-position: 50% 100%;
+    transform: scale(1.2);
+  }
+  75% {
+    background-position: 0% 50%;
+    transform: scale(1.1);
+  }
+  100% {
+    background-position: 0% 0%;
+    transform: scale(1);
+  }
+}
+
+.animate-blue-gradient {
+  background: linear-gradient(135deg, rgba(58, 93, 173, 0.3) 0%, rgba(58, 93, 173, 0.4) 50%, rgba(58, 93, 173, 0.3) 100%);
+  background-size: 200% 200%;
+  animation: purple-gradient-shift 3s ease-in-out infinite;
+}
+@keyframes animate-code {
+  0% {
+    transform: rotate(0deg) scale(1) translateY(0);
+    opacity: 1;
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1) translateY(-5px);
+    opacity: 0.8;
+  }
+  50% {
+    transform: rotate(180deg) scale(1) translateY(0);
+    opacity: 1;
+  }
+  75% {
+    transform: rotate(270deg) scale(1.1) translateY(-5px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: rotate(360deg) scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes animate-lightning {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-100deg);
+  }
+  30% {
+    transform: rotate(-100deg);
+  }
+  50% {
+    transform: rotate(-200deg);
+  }
+  60% {
+    transform: rotate(-200deg);
+  }
+  80% {
+    transform: rotate(-300deg);
+  }
+  90% {
+    transform: rotate(-300deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes animate-sparkle {
+  0% {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+    filter: brightness(1);
+  }
+  33% {
+    transform: rotate(120deg) scale(1.2);
+    opacity: 0.9;
+    filter: brightness(1.2);
+  }
+  66% {
+    transform: rotate(240deg) scale(1);
+    opacity: 1;
+    filter: brightness(1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+@keyframes animate-rocket {
+  0% {
+    transform: rotate(0deg) scale(1) translateY(0) translateX(0);
+    opacity: 1;
+  }
+  25% {
+    transform: rotate(-90deg) scale(1.15) translateY(-8px) translateX(4px);
+    opacity: 0.9;
+  }
+  50% {
+    transform: rotate(-180deg) scale(1) translateY(0) translateX(0);
+    opacity: 1;
+  }
+  75% {
+    transform: rotate(-270deg) scale(1.15) translateY(-8px) translateX(-4px);
+    opacity: 0.9;
+  }
+  100% {
+    transform: rotate(-360deg) scale(1) translateY(0) translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-float-code {
+  animation: animate-code 20s ease-in-out infinite;
+  color: #4E86FF;
+}
+
+.animate-pulse-lightning {
+  animation: animate-lightning 25s ease-in-out infinite;
+  color: #4E86FF;
+}
+
+.animate-rotate-sparkle {
+  animation: animate-sparkle 22s ease-in-out infinite;
+  color: #4E86FF;
+}
+
+.animate-float-rocket {
+  animation: animate-rocket 30s ease-in-out infinite;
+  color: #4E86FF;
+}
+@keyframes move-left-right {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+.animate-pulse-button {
+  animation: move-left-right 2s ease-in-out infinite;
+}
+
+
