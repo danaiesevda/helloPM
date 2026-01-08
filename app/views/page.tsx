@@ -123,10 +123,10 @@ export default function ViewsPage() {
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex items-center justify-between border-b border-border px-4 py-3">
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-border px-3 sm:px-4 py-2 sm:py-3">
           <div className="flex items-center gap-3">
             <LayoutGrid className="h-5 w-5" />
-            <h1 className="text-xl font-semibold">Views</h1>
+            <h1 className="text-lg sm:text-xl font-semibold">Views</h1>
           </div>
 
           <div className="flex items-center gap-2">

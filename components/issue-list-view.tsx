@@ -102,7 +102,7 @@ export function IssueListView({
       {/* Selection Action Bar */}
       {selectedIds.size > 0 && (
         <div className="flex items-center gap-3 rounded-lg border border-border bg-accent/50 px-4 py-2">
-          <span className="text-sm font-medium">
+          <span className="text-xs sm:text-sm font-medium">
             {selectedIds.size} selected
           </span>
           <div className="flex items-center gap-1">
@@ -201,7 +201,7 @@ export function IssueListView({
                 className="flex items-center gap-2 cursor-pointer"
                 onClick={() => isHidden && toggleHideSection(status)}
               >
-                <h2 className={`text-sm font-medium ${config.color} ${isHidden ? 'opacity-50' : ''}`}>
+                <h2 className={`text-xs sm:text-sm font-medium ${config.color} ${isHidden ? 'opacity-50' : ''}`}>
                   {config.label}
                 </h2>
                 {statusIssues.length > 0 && (

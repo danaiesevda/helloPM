@@ -74,13 +74,13 @@ export default function ProjectsPage() {
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex items-center justify-between border-b border-border px-4 py-3 gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <h1 className="text-xl font-semibold shrink-0">Projects</h1>
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-border px-3 sm:px-4 py-2 sm:py-3 gap-2 sm:gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 min-w-0 w-full sm:w-auto flex-wrap">
+            <h1 className="text-lg sm:text-xl font-semibold shrink-0">Projects</h1>
             <Button 
               variant={statusFilter === "all" ? "secondary" : "ghost"} 
               size="sm" 
-              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              className="h-7 text-xs sm:text-sm shrink-0 whitespace-nowrap"
               onClick={() => setStatusFilter("all")}
             >
               All
@@ -88,7 +88,7 @@ export default function ProjectsPage() {
             <Button 
               variant={statusFilter === "active" ? "secondary" : "ghost"} 
               size="sm" 
-              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              className="h-7 text-xs sm:text-sm shrink-0 whitespace-nowrap"
               onClick={() => setStatusFilter("active")}
             >
               Active
@@ -96,7 +96,7 @@ export default function ProjectsPage() {
             <Button 
               variant={statusFilter === "planned" ? "secondary" : "ghost"} 
               size="sm" 
-              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              className="h-7 text-xs sm:text-sm shrink-0 whitespace-nowrap"
               onClick={() => setStatusFilter("planned")}
             >
               Planned
@@ -104,7 +104,7 @@ export default function ProjectsPage() {
             <Button 
               variant={statusFilter === "completed" ? "secondary" : "ghost"} 
               size="sm" 
-              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              className="h-7 text-xs sm:text-sm shrink-0 whitespace-nowrap"
               onClick={() => setStatusFilter("completed")}
             >
               Completed

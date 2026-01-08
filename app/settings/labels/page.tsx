@@ -83,14 +83,14 @@ export default function LabelsSettingsPage() {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <div className="flex-1 flex flex-col">
-        <div className="border-b border-border px-6 py-4 flex items-center gap-4">
+        <div className="border-b border-border px-3 sm:px-6 py-3 sm:py-4 flex items-center gap-4">
           <Link href="/">
             <Button variant="outline" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to app
             </Button>
           </Link>
-          <h1 className="text-xl font-semibold text-foreground">Settings</h1>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Settings</h1>
         </div>
         <div className="flex flex-1 overflow-hidden">
           <nav className="w-64 border-r border-border p-4">
@@ -135,7 +135,7 @@ export default function LabelsSettingsPage() {
           </nav>
           <div className="flex-1 overflow-auto p-6">
             <div className="max-w-4xl">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
                 <div>
                   <h2 className="text-base font-semibold text-foreground">Labels</h2>
                   <p className="text-sm text-muted-foreground mt-1">Organize issues with custom labels</p>
@@ -221,7 +221,7 @@ export default function LabelsSettingsPage() {
                   {labels.map((label) => (
                     <div
                       key={label.id}
-                      className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors"
+                      className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 hover:bg-muted/30 transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <div

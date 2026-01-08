@@ -154,25 +154,26 @@ export default function Home() {
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex items-center justify-between border-b border-border px-4 py-3 gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <h1 className="text-xl font-semibold shrink-0">All Issues</h1>
-            <Button variant="ghost" size="sm" className="h-7 text-sm shrink-0 whitespace-nowrap">
-              Active
-            </Button>
-            <Button variant="ghost" size="sm" className="h-7 text-sm shrink-0 whitespace-nowrap">
-              Backlog
-            </Button>
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-border px-3 sm:px-4 py-2 sm:py-3 gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 w-full sm:w-auto">
+            <h1 className="text-lg sm:text-xl font-semibold shrink-0">All Issues</h1>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Button variant="ghost" size="sm" className="h-7 text-xs sm:text-sm shrink-0 whitespace-nowrap">
+                Active
+              </Button>
+              <Button variant="ghost" size="sm" className="h-7 text-xs sm:text-sm shrink-0 whitespace-nowrap">
+                Backlog
+              </Button>
+            </div>
           </div>
-
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
             <NotificationDropdown />
             <ViewSwitcher currentView={currentView} onViewChange={setCurrentView} />
           </div>
         </header>
 
-        <div className="flex items-center justify-between border-b border-border px-4 py-2">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-border px-3 sm:px-4 py-2 gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <FilterDropdown filters={filters} onFiltersChange={setFilters} />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -260,13 +261,13 @@ export default function Home() {
             </DropdownMenu>
           </div>
 
-          <Button size="sm" className="h-7 gap-1 text-sm" onClick={() => handleCreateIssue("todo")}>
+          <Button size="sm" className="h-7 gap-1 text-xs sm:text-sm w-full sm:w-auto" onClick={() => handleCreateIssue("todo")}>
             <Plus className="h-3 w-3" />
             <span>New issue</span>
           </Button>
         </div>
 
-        <div className="flex-1 overflow-auto px-4 py-3">
+        <div className="flex-1 overflow-auto px-2 sm:px-4 py-2 sm:py-3">
           {currentView === "list" && (
             <IssueListView
               issues={filteredIssues}

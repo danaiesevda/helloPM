@@ -35,7 +35,7 @@ export default function TeamProjectsPage({
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex items-center justify-between border-b border-border px-4 py-3 gap-4">
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-border px-3 sm:px-4 py-2 sm:py-3 gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-lg">{team.icon}</span>
@@ -111,7 +111,7 @@ export default function TeamProjectsPage({
                     <p className="mb-4 text-sm text-muted-foreground line-clamp-2">{project.description}</p>
 
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-muted-foreground">
                         <span>Progress</span>
                         <span>
                           {completedIssues}/{projectIssues.length}
@@ -176,7 +176,7 @@ export default function TeamProjectsPage({
                         <p className="text-lg font-semibold">{projectIssues.length}</p>
                       </div>
                       <div className="w-32">
-                        <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
+                        <div className="mb-1 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-muted-foreground">
                           <span>Progress</span>
                           <span>{project.progress}%</span>
                         </div>

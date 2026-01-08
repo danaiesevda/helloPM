@@ -250,7 +250,7 @@ export default function RoadmapPage() {
       </div>
       
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-sm">
           <span className="text-muted-foreground">Progress</span>
           <span className="font-medium">{milestone.progress}%</span>
         </div>
@@ -271,10 +271,10 @@ export default function RoadmapPage() {
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex items-center justify-between border-b border-border px-4 py-3">
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-border px-3 sm:px-4 py-2 sm:py-3">
           <div className="flex items-center gap-3">
             <Target className="h-5 w-5" />
-            <h1 className="text-xl font-semibold">Roadmap</h1>
+            <h1 className="text-lg sm:text-xl font-semibold">Roadmap</h1>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-7 gap-1 text-sm">
@@ -323,7 +323,7 @@ export default function RoadmapPage() {
                 const quarterMilestones = getMilestonesForQuarter(quarter.id)
                 return (
                   <div key={quarter.id}>
-                    <div className="mb-4 flex items-center justify-between">
+                    <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between">
                       <div className="flex items-center gap-3">
                         <h2 className="text-lg font-semibold">{quarter.label}</h2>
                         <span className="text-sm text-muted-foreground">{quarter.months.join(" · ")}</span>
@@ -378,7 +378,7 @@ export default function RoadmapPage() {
                 const monthMilestones = getMilestonesForMonth(month.id)
                 return (
                   <div key={month.id}>
-                    <div className="mb-3 flex items-center justify-between">
+                    <div className="mb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between">
                       <div className="flex items-center gap-3">
                         <h3 className="font-semibold">{month.label} {selectedYear}</h3>
                         {monthMilestones.length > 0 && (
@@ -411,7 +411,7 @@ export default function RoadmapPage() {
                         ))}
                       </div>
                     ) : (
-                      <div className="rounded-md border border-dashed border-border bg-muted/20 px-4 py-3 text-center text-sm text-muted-foreground">
+                      <div className="rounded-md border border-dashed border-border bg-muted/20 px-3 sm:px-4 py-2 sm:py-3 text-center text-sm text-muted-foreground">
                         No milestones
                       </div>
                     )}

@@ -142,13 +142,13 @@ export default function MyIssuesPage() {
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex items-center justify-between border-b border-border px-4 py-3 gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <h1 className="text-xl font-semibold shrink-0">My Issues</h1>
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-border px-3 sm:px-4 py-2 sm:py-3 gap-2 sm:gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 min-w-0 w-full sm:w-auto">
+            <h1 className="text-lg sm:text-xl font-semibold shrink-0">My Issues</h1>
             <Button 
               variant={activeTab === "assigned" ? "secondary" : "ghost"} 
               size="sm" 
-              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              className="h-7 text-xs sm:text-sm shrink-0 whitespace-nowrap"
               onClick={() => setActiveTab("assigned")}
             >
               Assigned to me
@@ -157,7 +157,7 @@ export default function MyIssuesPage() {
             <Button 
               variant={activeTab === "created" ? "secondary" : "ghost"} 
               size="sm" 
-              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              className="h-7 text-xs sm:text-sm shrink-0 whitespace-nowrap"
               onClick={() => setActiveTab("created")}
             >
               Created by me
@@ -166,20 +166,20 @@ export default function MyIssuesPage() {
             <Button 
               variant={activeTab === "subscribed" ? "secondary" : "ghost"} 
               size="sm" 
-              className="h-7 text-sm shrink-0 whitespace-nowrap"
+              className="h-7 text-xs sm:text-sm shrink-0 whitespace-nowrap"
               onClick={() => setActiveTab("subscribed")}
             >
               Subscribed
             </Button>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
             <FilterDropdown filters={filters} onFiltersChange={setFilters} />
             <ViewSwitcher currentView={currentView} onViewChange={setCurrentView} />
           </div>
         </header>
 
-        <div className="flex-1 overflow-auto px-4 py-3">
+        <div className="flex-1 overflow-auto px-2 sm:px-4 py-2 sm:py-3">
           {activeTab === "assigned" && (
             <>
               {currentView === "list" && (

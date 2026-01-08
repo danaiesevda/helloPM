@@ -189,7 +189,7 @@ export function IssueTableView({
         </div>
       )}
 
-      <table className="w-full border-collapse">
+      <table className="w-full min-w-[600px] border-collapse">
         <thead>
           <tr className="border-b border-border text-left text-xs text-muted-foreground">
             <th className="w-10 py-2 pl-4 pr-3">

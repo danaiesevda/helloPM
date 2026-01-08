@@ -27,7 +27,7 @@ export default function ProjectDetailPage({
         <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
         <main className="flex flex-1 items-center justify-center">
           <div className="text-center">
-            <h1 className="text-2xl font-semibold mb-2">Project not found</h1>
+            <h1 className="text-xl sm:text-2xl font-semibold mb-2">Project not found</h1>
             <p className="text-muted-foreground mb-4">This project doesn't exist or has been deleted.</p>
             <Link href="/projects">
               <Button>Back to Projects</Button>
@@ -54,7 +54,7 @@ export default function ProjectDetailPage({
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
-        <header className="border-b border-border px-4 py-3">
+        <header className="border-b border-border px-3 sm:px-4 py-2 sm:py-3">
           <div className="mb-3 flex items-center gap-2">
             <Link href="/projects">
               <Button variant="ghost" size="icon" className="h-7 w-7">
@@ -68,7 +68,7 @@ export default function ProjectDetailPage({
               >
                 {project.icon}
               </div>
-              <h1 className="text-xl font-semibold">{project.name}</h1>
+              <h1 className="text-lg sm:text-xl font-semibold">{project.name}</h1>
             </div>
             <span
               className="ml-2 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize"
@@ -81,7 +81,7 @@ export default function ProjectDetailPage({
             </span>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
             <p className="text-sm text-muted-foreground">{project.description}</p>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -95,11 +95,11 @@ export default function ProjectDetailPage({
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <p className="mb-1 text-xs text-muted-foreground">Total Issues</p>
-              <p className="text-2xl font-semibold">{projectIssues.length}</p>
+              <p className="text-xl sm:text-2xl font-semibold">{projectIssues.length}</p>
             </div>
             <div>
               <p className="mb-1 text-xs text-muted-foreground">Completed</p>
-              <p className="text-2xl font-semibold">{groupedIssues.done.length}</p>
+              <p className="text-xl sm:text-2xl font-semibold">{groupedIssues.done.length}</p>
             </div>
             <div>
               <p className="mb-2 text-xs text-muted-foreground">Progress</p>
@@ -143,7 +143,7 @@ export default function ProjectDetailPage({
 
                   return (
                     <div key={status}>
-                      <div className="mb-2 flex items-center justify-between">
+                      <div className="mb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between">
                         <h3 className="text-sm font-medium text-muted-foreground">
                           {labels[status as keyof typeof labels]} ({issues.length})
                         </h3>

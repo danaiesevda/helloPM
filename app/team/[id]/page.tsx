@@ -37,13 +37,13 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
 
       <main className="flex flex-1 flex-col overflow-hidden">
         <header className="border-b border-border px-4 py-4">
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-2xl">
                 {team.icon}
               </div>
               <div>
-                <h1 className="text-2xl font-semibold">{team.name}</h1>
+                <h1 className="text-xl sm:text-2xl font-semibold">{team.name}</h1>
                 <p className="text-sm text-muted-foreground">{team.key}</p>
               </div>
             </div>
@@ -62,19 +62,19 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
           <div className="grid gap-4 md:grid-cols-4">
             <div className="rounded-lg border border-border bg-card p-3">
               <p className="mb-1 text-xs text-muted-foreground">Total Issues</p>
-              <p className="text-2xl font-semibold">{stats.totalIssues}</p>
+              <p className="text-xl sm:text-2xl font-semibold">{stats.totalIssues}</p>
             </div>
             <div className="rounded-lg border border-border bg-card p-3">
               <p className="mb-1 text-xs text-muted-foreground">In Progress</p>
-              <p className="text-2xl font-semibold">{stats.inProgressIssues}</p>
+              <p className="text-xl sm:text-2xl font-semibold">{stats.inProgressIssues}</p>
             </div>
             <div className="rounded-lg border border-border bg-card p-3">
               <p className="mb-1 text-xs text-muted-foreground">Completed</p>
-              <p className="text-2xl font-semibold">{stats.completedIssues}</p>
+              <p className="text-xl sm:text-2xl font-semibold">{stats.completedIssues}</p>
             </div>
             <div className="rounded-lg border border-border bg-card p-3">
               <p className="mb-1 text-xs text-muted-foreground">Active Projects</p>
-              <p className="text-2xl font-semibold">{stats.activeProjects}</p>
+              <p className="text-xl sm:text-2xl font-semibold">{stats.activeProjects}</p>
             </div>
           </div>
         </header>
@@ -117,7 +117,7 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
                 <div className="space-y-3">
                   {teamProjects.map((project) => (
                     <div key={project.id} className="rounded-lg border border-border bg-card p-4">
-                      <div className="mb-3 flex items-center justify-between">
+                      <div className="mb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div
                             className="flex h-8 w-8 items-center justify-center rounded-lg text-xl"
@@ -154,7 +154,7 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
                 {mockUsers.map((user) => (
                   <div
                     key={user.id}
-                    className="flex items-center justify-between rounded-lg border border-border bg-card p-4"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border border-border bg-card p-4"
                   >
                     <div className="flex items-center gap-3">
                       <Avatar className="h-10 w-10">

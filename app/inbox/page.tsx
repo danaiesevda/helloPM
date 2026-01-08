@@ -182,14 +182,14 @@ export default function InboxPage() {
   const allPriorities: Issue["priority"][] = ["none", "urgent", "high", "medium", "low"]
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-background overflow-hidden">
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
         {/* Left Panel - Notifications List */}
-        <div className="w-[400px] border-r border-border flex flex-col">
+        <div className="w-full md:w-[400px] border-r border-border flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 border-b border-border">
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-semibold">Inbox</h1>
               <DropdownMenu>
@@ -228,7 +228,7 @@ export default function InboxPage() {
                 <div
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification.id)}
-                  className={`flex items-start gap-3 px-4 py-3 cursor-pointer border-b border-border transition-colors ${
+                  className={`flex items-start gap-3 px-2 sm:px-4 py-2 sm:py-3 cursor-pointer border-b border-border transition-colors ${
                     isSelected 
                       ? "bg-accent" 
                       : notification.read 
@@ -274,7 +274,7 @@ export default function InboxPage() {
         </div>
 
         {/* Right Panel - Issue Details */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="w-full md:flex-1 flex flex-col overflow-hidden">
           {selectedIssue ? (
             <>
               {/* Issue Header */}

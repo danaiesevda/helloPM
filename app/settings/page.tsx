@@ -47,14 +47,14 @@ export default function SettingsPage() {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <div className="flex-1 flex flex-col">
-        <div className="border-b border-border px-6 py-4 flex items-center gap-4">
+        <div className="border-b border-border px-3 sm:px-6 py-3 sm:py-4 flex items-center gap-4">
           <Link href="/">
             <Button variant="outline" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to app
             </Button>
           </Link>
-          <h1 className="text-xl font-semibold text-foreground">Settings</h1>
+          <h1 className="text-lg sm:text-xl font-semibold text-foreground">Settings</h1>
         </div>
         <div className="flex flex-1 overflow-hidden">
           <nav className="w-64 border-r border-border p-4">
@@ -126,7 +126,7 @@ export default function SettingsPage() {
               <div className="pt-4 border-t border-border">
                 <h2 className="text-base font-semibold text-foreground mb-4">Preferences</h2>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
                     <div>
                       <div className="text-sm font-medium text-foreground">Theme</div>
                       <div className="text-sm text-muted-foreground">Choose your interface theme</div>
@@ -161,7 +161,7 @@ export default function SettingsPage() {
                       </Button>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
                     <div>
                       <div className="text-sm font-medium text-foreground">Notifications</div>
                       <div className="text-sm text-muted-foreground">Receive email notifications</div>

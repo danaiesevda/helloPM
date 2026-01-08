@@ -24,6 +24,8 @@ import {
   LogOut,
   ChevronRight,
   Users,
+  Menu,
+  X,
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
@@ -63,6 +65,7 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
   const [isCreateProjectDialogOpen, setIsCreateProjectDialogOpen] = useState(false)
   const [inviteEmails, setInviteEmails] = useState("")
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
 
   // Sync selectedTeam with current URL
   useEffect(() => {
@@ -104,7 +107,39 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
   const currentTeam = teams.find((t) => t.id === selectedTeam)
 
   return (
-    <aside className="flex h-screen w-60 flex-col border-r border-border bg-sidebar">
+    <>
+      {/* Mobile menu button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed top-4 left-4 z-50 md:hidden"
+        onClick={() => setIsMobileOpen(true)}
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
+      
+      {/* Mobile overlay */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <aside className={cn(
+        "fixed md:static inset-y-0 left-0 z-40 flex h-screen w-60 flex-col border-r border-border bg-sidebar transform transition-transform duration-200 ease-in-out",
+        isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+      )}>
+        {/* Mobile close button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 md:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        >
+          <X className="h-5 w-5" />
+        </Button>
       {/* Workspace Switcher */}
       <div className="flex items-center gap-2 border-b border-sidebar-border px-3 py-3">
         <DropdownMenu>
@@ -450,5 +485,6 @@ export function Sidebar({ onSearchClick }: SidebarProps) {
       {/* Create Project Dialog */}
       <CreateProjectDialog open={isCreateProjectDialogOpen} onOpenChange={setIsCreateProjectDialogOpen} />
     </aside>
+    </>
   )
 }
