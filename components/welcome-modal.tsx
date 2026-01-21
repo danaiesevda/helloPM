@@ -76,13 +76,13 @@ export function WelcomeModal() {
                   WebkitTextFillColor: "transparent"
                 }}
               >
-                Project<br />Management Platform
+                Project Management Platform
               </h1>
             </div>
 
             {/* Description */}
             <div className="text-center mb-10 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
-              <p className="text-sm md:text-base text-black dark:text-white leading-relaxed max-w-2xl mx-auto" >
+              <p className="text-base md:text-lg text-black dark:text-white leading-relaxed max-w-2xl mx-auto" >
                 I designed and shipped an open-source project management platform that helps teams plan work, track progress, and stay aligned. Built for real workflows, it supports prioritisation and smooth collaboration from start to finish
               </p>
             </div>
