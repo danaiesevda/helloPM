@@ -37,7 +37,7 @@ export function WelcomeModal() {
   return (
     <Dialog open={isOpen} onOpenChange={handleClose} >
       <DialogContent className="max-w-3xl p-0 border-0 bg-transparent shadow-none overflow-visible" showCloseButton={false}>
-        <DialogTitle className="sr-only">Welcome to PineApple - Project Management Platform</DialogTitle>
+        <DialogTitle className="sr-only">Welcome to Project Management Platform</DialogTitle>
         <div className="relative z-50">
           {/* Animated ambient light background - moves behind the modal */}
           <div className="absolute inset-0 rounded-2xl animate-blue-gradient blur-lg -z-10 scale-100 opacity-25" />
@@ -76,11 +76,8 @@ export function WelcomeModal() {
                   WebkitTextFillColor: "transparent"
                 }}
               >
-                PineApple
-              </h1>
-              <h2 className="text-2xl md:text-3xl font-semibold text-black dark:text-white mt-2">
                 Project Management Platform
-              </h2>
+              </h1>
             </div>
 
             {/* Description */}
