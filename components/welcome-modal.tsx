@@ -37,7 +37,7 @@ export function WelcomeModal() {
   return (
     <Dialog open={isOpen} onOpenChange={handleClose} >
       <DialogContent className="max-w-3xl p-0 border-0 bg-transparent shadow-none overflow-visible" showCloseButton={false}>
-        <DialogTitle className="sr-only">Welcome to Pine Apple - SaaS CRM Platform</DialogTitle>
+        <DialogTitle className="sr-only">Welcome to PineApple - Project Management Platform</DialogTitle>
         <div className="relative z-50">
           {/* Animated ambient light background - moves behind the modal */}
           <div className="absolute inset-0 rounded-2xl animate-blue-gradient blur-lg -z-10 scale-100 opacity-25" />
@@ -76,14 +76,17 @@ export function WelcomeModal() {
                   WebkitTextFillColor: "transparent"
                 }}
               >
-                Project Management Platform
+                PineApple
               </h1>
+              <h2 className="text-2xl md:text-3xl font-semibold text-black dark:text-white mt-2">
+                Project Management Platform
+              </h2>
             </div>
 
             {/* Description */}
             <div className="text-center mb-10 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
               <p className="text-base md:text-lg text-black dark:text-white leading-relaxed max-w-2xl mx-auto" >
-                I designed and shipped a project management platform that helps teams plan work, track progress, and stay aligned in one place. Built for real workflows, it supports clear prioritisation, smoother collaboration, and reliable delivery from start to finish
+                I designed and shipped an open-source project management platform that helps teams plan work, track progress, and stay aligned. Built for real workflows, it supports prioritisation and smooth collaboration from start to finish
               </p>
             </div>
 
