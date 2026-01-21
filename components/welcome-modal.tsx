@@ -76,17 +76,14 @@ export function WelcomeModal() {
                   WebkitTextFillColor: "transparent"
                 }}
               >
-                Pine Apple
+                Project Management Platform
               </h1>
-              <h2 className="text-2xl md:text-3xl font-semibold text-black dark:text-white mt-2">
-                SaaS CRM Platform
-              </h2>
             </div>
 
             {/* Description */}
             <div className="text-center mb-10 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
               <p className="text-base md:text-lg text-black dark:text-white leading-relaxed max-w-2xl mx-auto" >
-                is a production-ready SaaS CRM designed, developed, and launched end to end, built to support real users, workflows, and scalable growth.
+                I designed and shipped a project management platform that helps teams plan work, track progress, and stay aligned in one place. Built for real workflows, it supports clear prioritisation, smoother collaboration, and reliable delivery from start to finish
               </p>
             </div>
 
