@@ -76,7 +76,7 @@ export function WelcomeModal() {
                   WebkitTextFillColor: "transparent"
                 }}
               >
-                Project Management Platform
+                Project<br />Management Platform
               </h1>
             </div>
 
