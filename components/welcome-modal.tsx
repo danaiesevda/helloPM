@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogOverlay } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Sparkles, Rocket, Zap, Code } from "lucide-react"
@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils"
 export function WelcomeModal() {
   const [isOpen, setIsOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     setMounted(true)
@@ -25,6 +27,24 @@ export function WelcomeModal() {
       clearTimeout(timer)
     }
   }, [])
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!buttonRef.current) return
+    
+    const rect = buttonRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left - rect.width / 2
+    const y = e.clientY - rect.top - rect.height / 2
+    
+    // Limit movement range (adjust multiplier for sensitivity)
+    const moveX = x * 0.15
+    const moveY = y * 0.15
+    
+    setMousePosition({ x: moveX, y: moveY })
+  }
+
+  const handleMouseLeave = () => {
+    setMousePosition({ x: 0, y: 0 })
+  }
 
   const handleClose = () => {
     setIsOpen(false)
@@ -83,23 +103,33 @@ export function WelcomeModal() {
             {/* CTA Button */}
             <div className="text-center animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
               <Button
+                ref={buttonRef}
                 onClick={handleClose}
                 size="lg"
-                className="group relative overflow-hidden px-8 py-6 text-base font-semibold rounded-lg text-white transition-all duration-300 animate-pulse-button !border-0 !ring-0 focus:!ring-0"
-                style={{ backgroundColor: "#3A5DAD", border: "none", outline: "none", boxShadow: "none" }}
+                className="group relative overflow-hidden px-8 py-6 text-base font-semibold rounded-lg text-white transition-transform duration-300 ease-out !border-0 !ring-0 focus:!ring-0"
+                style={{ 
+                  backgroundColor: "#3A5DAD", 
+                  border: "none", 
+                  outline: "none", 
+                  boxShadow: "none",
+                  transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`
+                }}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={(e) => {
+                  handleMouseLeave()
+                  e.currentTarget.style.backgroundColor = "#3A5DAD"
+                  e.currentTarget.style.border = "none"
+                  e.currentTarget.style.outline = "none"
+                  e.currentTarget.style.boxShadow = "none"
+                }}
                 onMouseEnter={(e) => { 
                   e.currentTarget.style.backgroundColor = "#2d4a8a"; 
                   e.currentTarget.style.border = "none";
-                  e.currentTarget.style.outline = "none"; e.currentTarget.style.boxShadow = "none";
-                  }}
-                onMouseLeave={(e) => { 
-                  e.currentTarget.style.backgroundColor = "#3A5DAD"; 
-                  e.currentTarget.style.border = "none";
-                  e.currentTarget.style.outline = "none"; e.currentTarget.style.boxShadow = "none";
-                  }}
+                  e.currentTarget.style.outline = "none"; 
+                  e.currentTarget.style.boxShadow = "none";
+                }}
               >
                 <span className="relative z-10 flex items-center gap-2">Explore <Sparkles className="h-4 w-4" /></span>
-                <div className="absolute inset-0 animate-shimmer" />
               </Button>
             </div>
           </div>
