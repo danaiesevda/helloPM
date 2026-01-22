@@ -106,7 +106,7 @@ export default function CreateIssuePage() {
         </header>
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
-          <div className="flex flex-1 overflow-hidden">
+          <div className="flex flex-1 overflow-x-auto overflow-y-hidden">
             {/* Main Content */}
             <div className="flex-1 overflow-y-auto px-6 py-4">
               <h1 className="mb-6 text-2xl font-semibold">New issue</h1>
@@ -154,7 +154,7 @@ export default function CreateIssuePage() {
             </div>
 
             {/* Sidebar Properties */}
-            <div className="w-[280px] shrink-0 border-l border-border bg-muted/30 px-4 py-4 overflow-y-auto">
+            <div className="w-[260px] min-w-[260px] shrink-0 border-l border-border bg-muted/30 px-3 py-4 overflow-y-auto">
               <div className="space-y-4">
                 {/* Status */}
                 <div>

@@ -161,7 +161,7 @@ export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: I
             </div>
           </div>
 
-          <div className="flex flex-1 overflow-hidden">
+          <div className="flex flex-1 overflow-x-auto overflow-y-hidden">
             {/* Main Content */}
             <div className="flex-1 overflow-y-auto px-6 py-4">
               {/* Title */}
@@ -221,7 +221,7 @@ export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: I
             </div>
 
             {/* Sidebar Properties */}
-            <div className="w-96 shrink-0 border-l border-border bg-muted/30 p-4 overflow-y-auto">
+            <div className="w-72 shrink-0 border-l border-border bg-muted/30 p-4 overflow-y-auto">
               <div className="space-y-4">
                 {/* Status */}
                 <div>
