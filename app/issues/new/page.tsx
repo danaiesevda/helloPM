@@ -89,7 +89,7 @@ export default function CreateIssuePage() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-background overflow-hidden">
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden">
@@ -105,10 +105,10 @@ export default function CreateIssuePage() {
           </div>
         </header>
 
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
           <div className="flex flex-1 overflow-hidden">
             {/* Main Content */}
-            <div className="flex-1 overflow-y-auto px-6 py-4">
+            <div className="flex-1 overflow-y-auto px-6 py-4 min-w-0">
               <h1 className="mb-6 text-2xl font-semibold">New issue</h1>
               
               {/* Title Input */}
@@ -154,7 +154,7 @@ export default function CreateIssuePage() {
             </div>
 
             {/* Sidebar Properties */}
-            <div className="w-96 shrink-0 border-l border-border bg-muted/30 p-4 overflow-y-auto">
+            <div className="w-[400px] shrink-0 border-l border-border bg-muted/30 p-4 overflow-y-auto">
               <div className="space-y-4">
                 {/* Status */}
                 <div>
