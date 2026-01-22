@@ -92,7 +92,7 @@ export default function CreateIssuePage() {
     <div className="flex h-screen bg-background overflow-hidden">
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
-      <main className="flex flex-1 flex-col overflow-hidden">
+      <main className="flex flex-1 flex-col overflow-hidden min-w-0">
         <header className="border-b border-border px-6 py-4 flex items-center gap-4">
           <Link href="/">
             <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -106,7 +106,7 @@ export default function CreateIssuePage() {
         </header>
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
-          <div className="flex flex-1 overflow-hidden">
+          <div className="flex flex-1 overflow-hidden min-w-0">
             {/* Main Content */}
             <div className="flex-1 overflow-y-auto px-6 py-4 min-w-0">
               <h1 className="mb-6 text-2xl font-semibold">New issue</h1>
@@ -154,8 +154,8 @@ export default function CreateIssuePage() {
             </div>
 
             {/* Sidebar Properties */}
-            <div className="w-[400px] shrink-0 border-l border-border bg-muted/30 p-4 overflow-y-auto">
-              <div className="space-y-4">
+            <div className="w-[400px] min-w-[400px] max-w-[400px] shrink-0 border-l border-border bg-muted/30 p-4 overflow-y-auto overflow-x-visible">
+              <div className="space-y-4 min-w-0">
                 {/* Status */}
                 <div>
                   <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
@@ -165,7 +165,7 @@ export default function CreateIssuePage() {
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent side="left" align="start">
                       <SelectItem value="backlog">Backlog</SelectItem>
                       <SelectItem value="todo">Todo</SelectItem>
                       <SelectItem value="in-progress">In Progress</SelectItem>
@@ -184,7 +184,7 @@ export default function CreateIssuePage() {
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent side="left" align="start">
                       <SelectItem value="none">No priority</SelectItem>
                       <SelectItem value="low">Low</SelectItem>
                       <SelectItem value="medium">Medium</SelectItem>
@@ -203,7 +203,7 @@ export default function CreateIssuePage() {
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Unassigned" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent side="left" align="start">
                       <SelectItem value="unassigned">Unassigned</SelectItem>
                       {mockUsers.map((user) => (
                         <SelectItem key={user.id} value={user.id}>
@@ -266,7 +266,7 @@ export default function CreateIssuePage() {
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="No project" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent side="left" align="start">
                       <SelectItem value="none">No project</SelectItem>
                       {mockProjects
                         .filter((p) => p.teamId === teamId)
