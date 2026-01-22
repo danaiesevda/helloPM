@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogOverlay } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Sparkles, Rocket, Zap, Code } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 export function WelcomeModal() {
   const [isOpen, setIsOpen] = useState(false)
@@ -18,7 +19,7 @@ export function WelcomeModal() {
     // Always show welcome modal on every visit/refresh
     const timer = setTimeout(() => {
       setIsOpen(true)
-    }, 800)
+    }, 100)
     
     return () => {
       clearTimeout(timer)
@@ -36,7 +37,7 @@ export function WelcomeModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose} >
-      <DialogContent className="max-w-3xl p-0 border-0 bg-transparent shadow-none overflow-visible" showCloseButton={false}>
+      <DialogContent className="max-w-3xl p-0 border-0 bg-transparent shadow-none overflow-visible" showCloseButton={false} overlayClassName="backdrop-blur-md transition-all duration-200">
         <DialogTitle className="sr-only">Welcome to Project Management Platform</DialogTitle>
         <div className="relative z-50">
           {/* Animated ambient light background - moves behind the modal */}
@@ -66,7 +67,7 @@ export function WelcomeModal() {
             </div>
 
             {/* Title */}
-            <div className="text-center mb-6 mt-20 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+            <div className="text-center mb-6 mt-20 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
               <h1 
                 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent animate-gradient leading-tight"
                 style={{
@@ -84,14 +85,14 @@ export function WelcomeModal() {
             </div>
 
             {/* Description */}
-            <div className="text-center mb-10 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
+            <div className="text-center mb-10 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
               <p className="text-base md:text-lg text-black dark:text-white leading-relaxed max-w-2xl mx-auto" >
                 I designed and shipped an open-source project management platform that helps teams plan work, track progress, and stay aligned. Built for real workflows, it supports prioritisation and smooth collaboration from start to finish
               </p>
             </div>
 
             {/* CTA Button */}
-            <div className="text-center animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
+            <div className="text-center animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
               <Button
                 onClick={handleClose}
                 size="lg"
