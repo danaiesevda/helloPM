@@ -77,6 +77,9 @@ export default function CreateIssuePage() {
       estimate: estimate ? parseInt(estimate) : null,
       createdBy: "1",
     }
+
+    addIssue(newIssue)
+    router.push("/")
   }
 
   const toggleLabel = (labelId: string) => {
@@ -99,195 +102,234 @@ export default function CreateIssuePage() {
           <h1 className="text-xl font-semibold">Create issue</h1>
         </header>
 
-        <div className="flex-1 overflow-auto p-6">
-          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="title">Title *</Label>
-              <Input
-                id="title"
-                placeholder="Issue title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="text-lg"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                placeholder="Add a description..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={6}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select value={status} onValueChange={(value: any) => setStatus(value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="backlog">Backlog</SelectItem>
-                    <SelectItem value="todo">Todo</SelectItem>
-                    <SelectItem value="in-progress">In Progress</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
-                    <SelectItem value="canceled">Canceled</SelectItem>
-                  </SelectContent>
-                </Select>
+        <form id="issue-form" onSubmit={handleSubmit} className="flex flex-col h-full"><div className="flex flex-1 overflow-hidden">
+            {/* Main Content */}
+            <div className="flex-1 overflow-y-auto px-6 py-4">
+              <h1 className="mb-6 text-2xl font-semibold">New issue</h1>
+              
+              {/* Title Input */}
+              <div className="mb-6">
+                <Input
+                  placeholder="Issue title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="text-lg font-semibold border-none p-0 focus-visible:ring-0 shadow-none"
+                />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="priority">Priority</Label>
-                <Select value={priority} onValueChange={(value: any) => setPriority(value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No priority</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Description Editor */}
+              <div className="mb-6">
+                <h3 className="mb-2 text-sm font-medium text-muted-foreground">Description</h3>
+                <Textarea
+                  placeholder="Add description..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={8}
+                  className="resize-none"
+                />
+              </div>
+
+              {/* Activity / Comments Section */}
+              <div className="border-t border-border pt-4">
+                <h3 className="mb-3 text-sm font-medium">Activity</h3>
+                <div className="flex gap-3">
+                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+                    Y
+                  </div>
+                  <div className="flex-1">
+                    <Textarea placeholder="Add a comment..." className="min-h-[80px] resize-none" />
+                    <div className="mt-2 flex justify-end gap-2">
+                      <Button variant="ghost" size="sm" type="button">
+                        Cancel
+                      </Button>
+                      <Button size="sm" type="button">Comment</Button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="team">Team</Label>
-                <Select value={teamId} onValueChange={setTeamId}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {state.teams.map((team) => (
-                      <SelectItem key={team.id} value={team.id}>
-                        <div className="flex items-center gap-2">
-                          <span>{team.icon}</span>
-                          <span>{team.name}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* Sidebar Properties */}
+            <div className="w-96 shrink-0 border-l border-border bg-muted/30 p-4 overflow-y-auto">
+              <div className="space-y-4">
+                {/* Status */}
+                <div>
+                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    Status
+                  </label>
+                  <Select value={status} onValueChange={(value: any) => setStatus(value)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="backlog">Backlog</SelectItem>
+                      <SelectItem value="todo">Todo</SelectItem>
+                      <SelectItem value="in-progress">In Progress</SelectItem>
+                      <SelectItem value="done">Done</SelectItem>
+                      <SelectItem value="canceled">Canceled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="project">Project</Label>
-                <Select value={projectId || "none"} onValueChange={(value) => setProjectId(value === "none" ? "" : value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="No project" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No project</SelectItem>
-                    {mockProjects
-                      .filter((p) => p.teamId === teamId)
-                      .map((project) => (
-                        <SelectItem key={project.id} value={project.id}>
-                          <div className="flex items-center gap-2">
-                            <span>{project.icon}</span>
-                            <span>{project.name}</span>
-                          </div>
+                {/* Priority */}
+                <div>
+                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    Priority
+                  </label>
+                  <Select value={priority} onValueChange={(value: any) => setPriority(value)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No priority</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="urgent">Urgent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Assignee */}
+                <div>
+                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    Assignee
+                  </label>
+                  <Select value={assigneeId || "unassigned"} onValueChange={(value) => setAssigneeId(value === "unassigned" ? "" : value)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Unassigned" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
+                      {mockUsers.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name}
                         </SelectItem>
                       ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="assignee">Assignee</Label>
-                <Select value={assigneeId || "unassigned"} onValueChange={(value) => setAssigneeId(value === "unassigned" ? "" : value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Unassigned" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="unassigned">Unassigned</SelectItem>
-                    {mockUsers.map((user) => (
-                      <SelectItem key={user.id} value={user.id}>
-                        {user.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="dueDate">Due date</Label>
-                <Input
-                  id="dueDate"
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="estimate">Estimate (points)</Label>
-                <Input
-                  id="estimate"
-                  type="number"
-                  placeholder="e.g., 3"
-                  value={estimate}
-                  onChange={(e) => setEstimate(e.target.value)}
-                  min="0"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Labels</Label>
-              <div className="flex flex-wrap gap-2">
-                {availableLabels.map((label) => {
-                  const isSelected = selectedLabels.includes(label.id)
-                  return (
-                    <button
-                      key={label.id}
+                {/* Labels */}
+                <div>
+                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    Labels
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {availableLabels.map((label) => {
+                      const isSelected = selectedLabels.includes(label.id)
+                      return (
+                        <button
+                          key={label.id}
+                          type="button"
+                          onClick={() => toggleLabel(label.id)}
+                          className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors ${
+                            isSelected
+                              ? "border border-foreground"
+                              : "border border-border hover:border-foreground/50"
+                          }`}
+                          style={{
+                            backgroundColor: isSelected ? `${label.color}20` : "transparent",
+                            color: isSelected ? label.color : "inherit",
+                          }}
+                        >
+                          <div
+                            className="h-1.5 w-1.5 rounded-full"
+                            style={{ backgroundColor: label.color }}
+                          />
+                          {label.name}
+                        </button>
+                      )
+                    })}
+                    <Button
                       type="button"
-                      onClick={() => toggleLabel(label.id)}
-                      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm transition-colors ${
-                        isSelected
-                          ? "border-2 border-foreground"
-                          : "border border-border hover:border-foreground/50"
-                      }`}
-                      style={{
-                        backgroundColor: isSelected ? `${label.color}20` : "transparent",
-                        color: isSelected ? label.color : "inherit",
-                      }}
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs"
+                      onClick={() => {}}
                     >
-                      <div
-                        className="h-2 w-2 rounded-full"
-                        style={{ backgroundColor: label.color }}
-                      />
-                      {label.name}
-                    </button>
-                  )
-                })}
+                      + Add
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Project */}
+                <div>
+                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    Project
+                  </label>
+                  <Select value={projectId || "none"} onValueChange={(value) => setProjectId(value === "none" ? "" : value)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="No project" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No project</SelectItem>
+                      {mockProjects
+                        .filter((p) => p.teamId === teamId)
+                        .map((project) => (
+                          <SelectItem key={project.id} value={project.id}>
+                            <div className="flex items-center gap-2">
+                              <span>{project.icon}</span>
+                              <span>{project.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Due date */}
+                <div>
+                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    Due date
+                  </label>
+                  <Input
+                    type="date"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Estimate */}
+                <div>
+                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    Estimate
+                  </label>
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    value={estimate}
+                    onChange={(e) => setEstimate(e.target.value)}
+                    min="0"
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Created/Updated dates */}
+                <div className="pt-4 border-t border-border space-y-1">
+                  <div className="text-xs text-muted-foreground">
+                    Created {new Date().toLocaleDateString()}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    Updated {new Date().toLocaleDateString()}
+                  </div>
+                </div>
               </div>
             </div>
+          </div>
 
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
-              <Link href="/">
-                <Button type="button" variant="outline">
-                  Cancel
-                </Button>
-              </Link>
-              <Button type="submit" disabled={!title.trim()}>
-                Create issue
+          {/* Footer with buttons */}
+          <div className="border-t border-border px-6 py-4 flex items-center justify-end gap-3">
+            <Link href="/">
+              <Button type="button" variant="outline">
+                Cancel
               </Button>
-            </div>
-          </form>
-        </div>
-      </main>
+            </Link>
+            <Button type="submit" form="issue-form" disabled={!title.trim()}>
+              Create issue
+            </Button>
+          </div>      </main>
 
       <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
     </div>
