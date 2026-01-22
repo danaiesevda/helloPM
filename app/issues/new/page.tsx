@@ -89,7 +89,7 @@ export default function CreateIssuePage() {
   }
 
   return (
-    <div className="flex h-screen w-screen bg-background overflow-hidden fixed inset-0">
+    <div className="flex min-h-screen w-full bg-background overflow-hidden">
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
       <main className="flex flex-1 flex-col overflow-hidden min-w-0 w-full">
