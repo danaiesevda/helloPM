@@ -37,14 +37,14 @@ export function WelcomeModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose} >
-      <DialogContent className="max-w-3xl p-0 border-0 bg-transparent shadow-none overflow-visible" showCloseButton={false} overlayClassName="backdrop-blur-md transition-all duration-200">
+      <DialogContent className="w-[80vw] h-[80vh] max-w-none p-0 border-0 bg-transparent shadow-none overflow-visible flex items-center justify-center" showCloseButton={false} overlayClassName="backdrop-blur-md transition-all duration-200">
         <DialogTitle className="sr-only">Welcome to Project Management Platform</DialogTitle>
-        <div className="relative z-50">
+        <div className="relative z-50 w-full h-full flex items-center justify-center">
           {/* Animated ambient light background - moves behind the modal */}
-          <div className="absolute inset-0 rounded-[60px] animate-blue-gradient blur-lg -z-10 scale-100 opacity-25" />
+          <div className="absolute inset-0 rounded-xl animate-blue-gradient blur-lg -z-10 scale-100 opacity-25" />
           
           {/* Main content card */}
-          <div className="relative bg-background border border-border/50 rounded-[60px] p-8 md:p-12 shadow-2xl animate-scale-in">
+          <div className="relative bg-background border border-border/50 rounded-xl p-8 md:p-12 shadow-2xl animate-scale-in w-full h-full flex flex-col items-center justify-center">
             {/* Icons in corners with animations */}
             {/* Top Left Icons */}
             <div className="absolute top-6 left-6 flex flex-col gap-4">
