@@ -325,11 +325,13 @@ export default function CreateIssuePage() {
 
           {/* Footer with buttons */}
           <div className="border-t border-border px-6 py-4 flex items-center justify-end gap-3 shrink-0">
-            <Link href="/">
-              <Button type="button" variant="outline">
-                Cancel
-              </Button>
-            </Link>
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={() => router.push("/")}
+            >
+              Cancel
+            </Button>
             <Button type="submit" disabled={!title.trim()}>
               Create issue
             </Button>
