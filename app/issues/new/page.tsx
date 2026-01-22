@@ -89,10 +89,10 @@ export default function CreateIssuePage() {
   }
 
   return (
-    <div className="flex h-screen w-full bg-background overflow-hidden">
+    <div className="flex h-screen w-full bg-background overflow-hidden overflow-x-hidden">
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
-      <main className="flex flex-1 flex-col overflow-hidden min-w-0 w-full">
+      <main className="flex flex-1 flex-col overflow-hidden min-w-0 w-full max-w-full">
         <header className="border-b border-border px-6 py-4 flex items-center gap-4">
           <Link href="/">
             <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -105,10 +105,10 @@ export default function CreateIssuePage() {
           </div>
         </header>
 
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
-          <div className="flex flex-1 overflow-hidden min-w-0">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0 max-w-full">
+          <div className="flex flex-1 overflow-hidden min-w-0 max-w-full">
             {/* Main Content */}
-            <div className="flex-1 overflow-y-auto px-6 py-4 min-w-0">
+            <div className="flex-1 overflow-y-auto px-6 py-4 min-w-0 max-w-full">
               <h1 className="mb-6 text-2xl font-semibold">New issue</h1>
               
               {/* Title Input */}
@@ -154,7 +154,7 @@ export default function CreateIssuePage() {
             </div>
 
             {/* Sidebar Properties */}
-            <div className="w-[420px] min-w-[420px] max-w-[420px] shrink-0 border-l border-border bg-muted/30 px-5 py-4 overflow-y-auto">
+            <div className="w-[420px] min-w-[420px] max-w-[420px] shrink-0 border-l border-border bg-muted/30 px-5 py-4 overflow-y-auto overflow-x-hidden">
               <div className="space-y-4">
                 {/* Status */}
                 <div>
