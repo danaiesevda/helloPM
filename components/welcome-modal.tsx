@@ -37,7 +37,7 @@ export function WelcomeModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose} >
-      <DialogContent className="w-[80vw] h-[80vh] max-w-none p-0 border-0 bg-transparent shadow-none overflow-visible flex items-center justify-center" showCloseButton={false} overlayClassName="backdrop-blur-md transition-all duration-200">
+      <DialogContent className="w-[95vw] h-[80vh] max-w-none p-0 border-0 bg-transparent shadow-none overflow-visible flex items-center justify-center" showCloseButton={false} overlayClassName="backdrop-blur-md transition-all duration-200">
         <DialogTitle className="sr-only">Welcome to Project Management Platform</DialogTitle>
         <div className="relative z-50 w-full h-full flex items-center justify-center">
           {/* Animated ambient light background - moves behind the modal */}
