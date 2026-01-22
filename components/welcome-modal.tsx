@@ -68,20 +68,9 @@ export function WelcomeModal() {
 
             {/* Title */}
             <div className="text-center mb-6 mt-20">
-              <h1 
-                className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent leading-tight"
-                style={{
-                  backgroundImage: "linear-gradient(90deg, #000000 0%, #3A5DAD 25%, #EFB100 50%, #3A5DAD 75%, #000000 100%)",
-                  backgroundSize: "200% 100%",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent"
-                }}
-              >
-                Project Management
+              <h1 className="text-3xl md:text-4xl font-bold leading-tight" style={{ color: "#EFB100" }}>
+                Project Management Platform
               </h1>
-              <h2 className="text-2xl md:text-3xl font-semibold text-black dark:text-white mt-2">
-                Platform
-              </h2>
             </div>
 
             {/* Description */}
