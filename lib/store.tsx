@@ -51,7 +51,7 @@ const AppContext = createContext<AppContextType | null>(null)
 const STORAGE_KEY = "hellopm-app-state"
 
 const defaultWorkspace: WorkspaceSettings = {
-  name: "Pine Apple",
+  name: "PineApple",
   url: "pineapple.app",
   notifications: true,
 }
@@ -78,10 +78,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
         const parsed = JSON.parse(stored)
-        // Migrate workspace name from "Ferrero Rocher" or variants to "Pine Apple"
+        // Migrate workspace name from "Ferrero Rocher" or variants to "PineApple", and fix "Pine Apple" spacing
         let workspace = parsed.workspace || defaultWorkspace
-        if (workspace.name && (workspace.name.includes("Ferrero") || workspace.name.includes("Ferro") || workspace.name.toLowerCase().includes("ferrero"))) {
-          workspace = { ...workspace, name: "Pine Apple" }
+        if (workspace.name) {
+          if (workspace.name.includes("Ferrero") || workspace.name.includes("Ferro") || workspace.name.toLowerCase().includes("ferrero")) {
+            workspace = { ...workspace, name: "PineApple" }
+          } else if (workspace.name === "Pine Apple" || workspace.name.includes("Pine Apple")) {
+            workspace = { ...workspace, name: "PineApple" }
+          }
         }
         setState({
           issues: parsed.issues || mockData.issues,
