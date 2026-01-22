@@ -99,10 +99,14 @@ export default function CreateIssuePage() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <h1 className="text-xl font-semibold">Create issue</h1>
+          <span className="text-sm text-muted-foreground">TASK-{state.issues.length + 1}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-500">Todo</span>
+          </div>
         </header>
 
-        <form id="issue-form" onSubmit={handleSubmit} className="flex flex-col h-full"><div className="flex flex-1 overflow-hidden">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex flex-1 overflow-hidden">
             {/* Main Content */}
             <div className="flex-1 overflow-y-auto px-6 py-4">
               <h1 className="mb-6 text-2xl font-semibold">New issue</h1>
@@ -320,16 +324,18 @@ export default function CreateIssuePage() {
           </div>
 
           {/* Footer with buttons */}
-          <div className="border-t border-border px-6 py-4 flex items-center justify-end gap-3">
+          <div className="border-t border-border px-6 py-4 flex items-center justify-end gap-3 shrink-0">
             <Link href="/">
               <Button type="button" variant="outline">
                 Cancel
               </Button>
             </Link>
-            <Button type="submit" form="issue-form" disabled={!title.trim()}>
+            <Button type="submit" disabled={!title.trim()}>
               Create issue
             </Button>
-          </div>      </main>
+          </div>
+        </form>
+      </main>
 
       <CommandPalette open={isCommandOpen} onOpenChange={setIsCommandOpen} />
     </div>
