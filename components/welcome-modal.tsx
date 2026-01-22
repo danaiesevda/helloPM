@@ -67,9 +67,9 @@ export function WelcomeModal() {
             </div>
 
             {/* Title */}
-            <div className="text-center mb-6 mt-20 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
+            <div className="text-center mb-6 mt-20">
               <h1 
-                className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent animate-gradient leading-tight"
+                className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent leading-tight"
                 style={{
                   backgroundImage: "linear-gradient(90deg, #000000 0%, #3A5DAD 25%, #EFB100 50%, #3A5DAD 75%, #000000 100%)",
                   backgroundSize: "200% 100%",
