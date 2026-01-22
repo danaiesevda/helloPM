@@ -89,10 +89,10 @@ export default function CreateIssuePage() {
   }
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className="flex h-screen w-screen bg-background overflow-hidden fixed inset-0">
       <Sidebar onSearchClick={() => setIsCommandOpen(true)} />
 
-      <main className="flex flex-1 flex-col overflow-hidden min-w-0">
+      <main className="flex flex-1 flex-col overflow-hidden min-w-0 w-full">
         <header className="border-b border-border px-6 py-4 flex items-center gap-4">
           <Link href="/">
             <Button variant="ghost" size="icon" className="h-8 w-8">
