@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogOverlay } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Sparkles, Rocket, Zap, Code } from "lucide-react"
+import { Sparkles, Rocket, Zap, Code, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function WelcomeModal() {
@@ -98,7 +98,7 @@ export function WelcomeModal() {
                   e.currentTarget.style.outline = "none"; e.currentTarget.style.boxShadow = "none";
                   }}
               >
-                <span className="relative z-10">Get Started</span>
+                <span className="relative z-10 flex items-center gap-2">Explore <ArrowRight className="h-4 w-4" /></span>
                 <div className="absolute inset-0 animate-shimmer" />
               </Button>
             </div>
