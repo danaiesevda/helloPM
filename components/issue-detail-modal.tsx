@@ -114,7 +114,7 @@ export function IssueDetailModal({ issue, open, onOpenChange, onIssueUpdate }: I
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[95vw] sm:max-w-6xl max-w-[95vw] overflow-hidden p-0" showCloseButton={false}>
+      <DialogContent className="max-h-[90vh] !w-[95vw] !max-w-6xl sm:!max-w-6xl overflow-hidden p-0" showCloseButton={false}>
         <DialogTitle className="sr-only">
           {issue.identifier} - {title}
         </DialogTitle>
