@@ -99,14 +99,24 @@ export default function Home() {
   }
 
   const handleCreateIssue = (status: Issue["status"] = "todo") => {
-    const newId = (Math.max(...issues.map(i => parseInt(i.id)), 0) + 1).toString()
-    // Find the highest TES number from existing identifiers
+    // Generate new ID - handle empty array and non-numeric IDs safely
+    const numericIds = issues
+      .map(i => {
+        const parsed = parseInt(i.id)
+        return isNaN(parsed) ? 0 : parsed
+      })
+      .filter(id => id > 0)
+    const maxId = numericIds.length > 0 ? Math.max(...numericIds) : 0
+    const newId = (maxId + 1).toString()
+    
+    // Find the highest TASK number from existing identifiers
     const tesNumbers = issues
       .map(i => {
         const match = i.identifier.match(/TASK-(\d+)/)
         return match ? parseInt(match[1]) : 0
       })
-    const nextTaskNumber = Math.max(...tesNumbers, 0) + 1
+      .filter(num => num > 0)
+    const nextTaskNumber = tesNumbers.length > 0 ? Math.max(...tesNumbers) + 1 : 1
     const newIssue: Issue = {
       id: newId,
       identifier: `TASK-${nextTaskNumber}`,
