@@ -40,10 +40,10 @@ export function WelcomeModal() {
         <DialogTitle className="sr-only">Welcome to Project Management Platform</DialogTitle>
         <div className="relative z-50">
           {/* Animated ambient light background - moves behind the modal */}
-          <div className="absolute inset-0 rounded-2xl animate-blue-gradient blur-lg -z-10 scale-100 opacity-25" />
+          <div className="absolute inset-0 rounded-[60px] animate-blue-gradient blur-lg -z-10 scale-100 opacity-25" />
           
           {/* Main content card */}
-          <div className="relative bg-background border border-border/50 rounded-2xl p-8 md:p-12 shadow-2xl animate-scale-in">
+          <div className="relative bg-background border border-border/50 rounded-[60px] p-8 md:p-12 shadow-2xl animate-scale-in">
             {/* Icons in corners with animations */}
             {/* Top Left Icons */}
             <div className="absolute top-6 left-6 flex flex-col gap-4">
