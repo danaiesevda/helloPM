@@ -154,11 +154,11 @@ export default function CreateIssuePage() {
             </div>
 
             {/* Sidebar Properties */}
-            <div className="w-[400px] min-w-[400px] max-w-[400px] shrink-0 border-l border-border bg-muted/30 p-4 overflow-y-auto overflow-x-visible">
-              <div className="space-y-4 min-w-0">
+            <div className="w-[420px] min-w-[420px] max-w-[420px] shrink-0 border-l border-border bg-muted/30 px-5 py-4 overflow-y-auto">
+              <div className="space-y-4">
                 {/* Status */}
                 <div>
-                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                  <label className="mb-2 block text-xs font-medium text-muted-foreground">
                     Status
                   </label>
                   <Select value={status} onValueChange={(value: any) => setStatus(value)}>
@@ -177,7 +177,7 @@ export default function CreateIssuePage() {
 
                 {/* Priority */}
                 <div>
-                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                  <label className="mb-2 block text-xs font-medium text-muted-foreground">
                     Priority
                   </label>
                   <Select value={priority} onValueChange={(value: any) => setPriority(value)}>
@@ -196,7 +196,7 @@ export default function CreateIssuePage() {
 
                 {/* Assignee */}
                 <div>
-                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                  <label className="mb-2 block text-xs font-medium text-muted-foreground">
                     Assignee
                   </label>
                   <Select value={assigneeId || "unassigned"} onValueChange={(value) => setAssigneeId(value === "unassigned" ? "" : value)}>
@@ -216,7 +216,7 @@ export default function CreateIssuePage() {
 
                 {/* Labels */}
                 <div>
-                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                  <label className="mb-2 block text-xs font-medium text-muted-foreground">
                     Labels
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -259,7 +259,7 @@ export default function CreateIssuePage() {
 
                 {/* Project */}
                 <div>
-                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                  <label className="mb-2 block text-xs font-medium text-muted-foreground">
                     Project
                   </label>
                   <Select value={projectId || "none"} onValueChange={(value) => setProjectId(value === "none" ? "" : value)}>
@@ -284,7 +284,7 @@ export default function CreateIssuePage() {
 
                 {/* Due date */}
                 <div>
-                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                  <label className="mb-2 block text-xs font-medium text-muted-foreground">
                     Due date
                   </label>
                   <Input
@@ -297,7 +297,7 @@ export default function CreateIssuePage() {
 
                 {/* Estimate */}
                 <div>
-                  <label className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                  <label className="mb-2 block text-xs font-medium text-muted-foreground">
                     Estimate
                   </label>
                   <Input
