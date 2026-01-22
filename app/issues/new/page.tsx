@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { mockTeams, mockProjects, mockUsers, type Issue } from "@/lib/mock-data"
+import { mockProjects, mockUsers, type Issue } from "@/lib/mock-data"
 import { useAppState } from "@/lib/store"
 import { ArrowLeft, X } from "lucide-react"
 import Link from "next/link"
@@ -32,7 +32,7 @@ export default function CreateIssuePage() {
   const [priority, setPriority] = useState<"urgent" | "high" | "medium" | "low" | "none">("none")
   const [assigneeId, setAssigneeId] = useState<string>("")
   const [projectId, setProjectId] = useState<string>("")
-  const [teamId, setTeamId] = useState<string>(mockTeams[0]?.id || "")
+  const [teamId, setTeamId] = useState<string>(state.teams[0]?.id || "")
   const [selectedLabels, setSelectedLabels] = useState<string[]>([])
   const [dueDate, setDueDate] = useState("")
   const [estimate, setEstimate] = useState("")
