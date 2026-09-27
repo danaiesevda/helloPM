@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AppProvider } from '@/lib/store'
 import { WelcomeModal } from '@/components/welcome-modal'
+import { StickerCursor } from '@/components/sticker-cursor'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -39,6 +40,7 @@ export default function RootLayout({
           </AppProvider>
           <Analytics />
         </ThemeProvider>
+        <StickerCursor />
       </body>
     </html>
   )
